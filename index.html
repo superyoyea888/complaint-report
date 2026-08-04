@@ -3,170 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายงานสถิติเรื่องร้องทุกข์ประชาชน</title>
+    <title>ระบบติดตามเรื่องร้องเรียน/ร้องทุกข์</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Prompt) -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style> body { font-family: 'Prompt', sans-serif; } </style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
 </head>
-<body class="bg-pink-50/30 text-gray-700 min-h-screen">
+<body class="bg-slate-50 min-h-screen pb-12">
 
-    <!-- Navbar -->
-    <nav class="bg-white/80 backdrop-blur-md border-b border-pink-100 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-2xl">🎈</span>
-                <h1 class="text-xl font-bold text-gray-800">ระบบรายงานเรื่องร้องทุกข์</h1>
-            </div>
-            <a href="admin.html" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-4 py-2 rounded-2xl text-sm font-semibold transition flex items-center gap-1">
-                🔐 สำหรับเจ้าหน้าที่
+    <!-- Header / Navbar -->
+    <nav class="bg-indigo-900 text-white shadow-md mb-8">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">
+                <span>🏛️</span> ระบบติดตามเรื่องร้องเรียน/ร้องทุกข์
+            </h1>
+            <a href="admin.html" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-xs font-medium transition shadow">
+                🔑 เข้าสู่ระบบเจ้าหน้าที่
             </a>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 py-8">
-        <!-- สถิติรายวัน รายเดือน รายปี -->
-        <h2 class="text-sm font-bold text-gray-400 tracking-wider mb-3">✨ ภาพรวมสถิติคำร้อง</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100/60 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-400">วันนี้</p>
-                    <h3 id="statToday" class="text-3xl font-extrabold text-gray-800 mt-1">0</h3>
-                </div>
-                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-xl">☀️</div>
+    <div class="max-w-7xl mx-auto px-4">
+
+        <!-- 1. KPI Cards (สถิติรวม) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">เรื่องร้องเรียนทั้งหมด</p>
+                <h3 id="statTotal" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100/60 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-400">เดือนนี้</p>
-                    <h3 id="statMonth" class="text-3xl font-extrabold text-gray-800 mt-1">0</h3>
-                </div>
-                <div class="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-xl">📅</div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-amber-600">กำลังดำเนินการ</p>
+                <h3 id="statPending" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
             </div>
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-pink-100/60 flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold text-gray-400">ปีนี้</p>
-                    <h3 id="statYear" class="text-3xl font-extrabold text-gray-800 mt-1">0</h3>
-                </div>
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-xl">🏆</div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-emerald-600">ดำเนินการเสร็จสิ้น</p>
+                <h3 id="statCompleted" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-rose-600">⚠️ ตกค้างเกิน 7 วัน</p>
+                <h3 id="statOverdue" class="text-3xl font-bold text-rose-600 mt-1">0</h3>
             </div>
         </div>
 
-        <!-- สรุปแยกตามสี (วันนี้) -->
-        <h2 class="text-sm font-bold text-gray-400 tracking-wider mb-3">🌈 ระดับความเร่งด่วน (ประจำวันนี้)</h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="bg-gray-900 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
-                <span class="text-xs font-medium">⚫ ด่วนที่สุด (เรียนผู้บริหาร)</span>
-                <span id="colorBlack" class="text-xl font-bold bg-gray-800 px-3 py-1 rounded-xl">0</span>
+        <!-- 2. Charts (กราฟสถิติ) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 class="text-sm font-bold text-slate-700 mb-4">📊 จำนวนเคสตามขั้นตอนการดำเนินงาน</h4>
+                <div class="h-64">
+                    <canvas id="stepChart"></canvas>
+                </div>
             </div>
-            <div class="bg-rose-500 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
-                <span class="text-xs font-medium">🔴 อันตรายต่อประชาชน</span>
-                <span id="colorRed" class="text-xl font-bold bg-rose-600 px-3 py-1 rounded-xl">0</span>
-            </div>
-            <div class="bg-amber-400 text-gray-900 p-4 rounded-2xl shadow-sm flex items-center justify-between">
-                <span class="text-xs font-bold">🟡 กระทบการใช้ชีวิต</span>
-                <span id="colorYellow" class="text-xl font-bold bg-amber-300 px-3 py-1 rounded-xl">0</span>
-            </div>
-            <div class="bg-emerald-500 text-white p-4 rounded-2xl shadow-sm flex items-center justify-between">
-                <span class="text-xs font-medium">🟢 เร่งทำภายใน 3 วัน</span>
-                <span id="colorGreen" class="text-xl font-bold bg-emerald-600 px-3 py-1 rounded-xl">0</span>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h4 class="text-sm font-bold text-slate-700 mb-4">🏛️ จำนวนเรื่องร้องเรียนแยกตาม กอง/สำนัก</h4>
+                <div class="h-64">
+                    <canvas id="deptChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- ตารางเคส -->
-        <div class="bg-white rounded-3xl shadow-sm border border-pink-100/60 overflow-hidden">
-            <div class="p-6 border-b border-gray-50 flex justify-between items-center">
-                <h3 class="font-bold text-gray-800 flex items-center gap-2">📋 รายการคำร้องล่าสุด</h3>
+        <!-- 3. Filter & Search Bar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาเรื่อง / ชุมชน / ซอย..." class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                <select id="filterCategory" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกประเภทเรื่อง</option>
+                    <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
+                    <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
+                    <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
+                    <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
+                </select>
+                <select id="filterDepartment" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกกอง/สำนัก</option>
+                    <option value="สำนักปลัด">สำนักปลัด</option>
+                    <option value="สำนักเลขานุการเทศบาล">สำนักเลขานุการเทศบาล</option>
+                    <option value="สำนักการศึกษา">สำนักการศึกษา</option>
+                    <option value="กองสาธารณสุข">กองสาธารณสุข</option>
+                    <option value="กองคลัง">กองคลัง</option>
+                    <option value="กองช่าง">กองช่าง</option>
+                    <option value="กองการเจ้าหน้าที่">กองการเจ้าหน้าที่</option>
+                    <option value="กองสวัสดิการ">กองสวัสดิการ</option>
+                    <option value="กองยุทธศาสตร์และงบประมาณ">กองยุทธศาสตร์และงบประมาณ</option>
+                    <option value="กองการแพทย์">กองการแพทย์</option>
+                </select>
+                <select id="filterStep" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกขั้นตอนดำเนินงาน</option>
+                    <option value="รับเรื่อง">1. รับเรื่อง</option>
+                    <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายฯ</option>
+                    <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
+                    <option value="ดำเนินการเสร็จสิ้น">4. เสร็จสิ้น</option>
+                </select>
             </div>
+        </div>
+
+        <!-- 4. Table Display -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                <span>📋</span> รายการเรื่องร้องเรียน
+            </h3>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-pink-50/50 text-gray-400 text-xs uppercase tracking-wider">
-                            <th class="p-4">วันที่/เวลา</th>
-                            <th class="p-4">ชุมชน / ซอย</th>
-                            <th class="p-4">รายละเอียดคำร้อง</th>
-                            <th class="p-4">ความเร่งด่วน</th>
-                            <th class="p-4">ขั้นตอนการดำเนินงาน</th>
+                <table class="w-full text-left text-sm text-slate-600">
+                    <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
+                        <tr>
+                            <th class="p-3 rounded-l-lg">วันที่/เวลา</th>
+                            <th class="p-3">ระดับ</th>
+                            <th class="p-3">เรื่อง / ประเภท</th>
+                            <th class="p-3">🏡 สถานที่ (ชุมชน/ซอย)</th>
+                            <th class="p-3">🏛️ กอง/สำนัก / ผู้รับผิดชอบ</th>
+                            <th class="p-3">ขั้นตอนปัจจุบัน</th>
+                            <th class="p-3 rounded-r-lg">⚠️ ปัญหา/อุปสรรค</th>
                         </tr>
                     </thead>
-                    <tbody id="caseTableBody" class="divide-y divide-gray-50 text-sm">
-                        <tr><td colspan="5" class="p-8 text-center text-gray-400">กำลังโหลดข้อมูล... 🌸</td></tr>
+                    <tbody id="publicTableBody" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="7" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-    </main>
 
+    </div>
+
+    <!-- Firebase Script -->
     <script type="module">
-        import { db, collection, getDocs } from './app.js';
+        import { db, collection, getDocs, query, orderBy } from "./app.js";
 
-        async function loadData() {
+        let allData = [];
+        let stepChartInstance = null;
+        let deptChartInstance = null;
+
+        const searchInput = document.getElementById('searchInput');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterDepartment = document.getElementById('filterDepartment');
+        const filterStep = document.getElementById('filterStep');
+        const publicTableBody = document.getElementById('publicTableBody');
+
+        async function initDashboard() {
             try {
-                const querySnapshot = await getDocs(collection(db, "complaints"));
-                
-                // วัน เดือน ปี อิงปัจจุบัน
-                const now = new Date();
-                const todayStr = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()+543}`;
-                const monthStr = `/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()+543}`;
-                const yearStr = `/${now.getFullYear()+543}`;
+                const q = query(collection(db, "complaints"), orderBy("createdAt", "desc"));
+                const querySnapshot = await getDocs(q);
 
-                let countToday = 0, countMonth = 0, countYear = 0;
-                let cBlack = 0, cRed = 0, cYellow = 0, cGreen = 0;
-                let rows = "";
-
-                querySnapshot.forEach((doc) => {
-                    const d = doc.data();
-                    
-                    // คำนวณสถิติ
-                    if (d.dateStr === todayStr) {
-                        countToday++;
-                        if (d.color === 'black') cBlack++;
-                        if (d.color === 'red') cRed++;
-                        if (d.color === 'yellow') cYellow++;
-                        if (d.color === 'green') cGreen++;
-                    }
-                    if (d.dateStr && d.dateStr.includes(monthStr)) countMonth++;
-                    if (d.dateStr && d.dateStr.includes(yearStr)) countYear++;
-
-                    // Badge สำหรับความเร่งด่วน (เคสสี)
-                    let colorBadge = '';
-                    if (d.color === 'black') colorBadge = '<span class="bg-gray-900 text-white text-xs px-3 py-1 rounded-xl font-medium">⚫ นำเรียนผู้บริหาร</span>';
-                    else if (d.color === 'red') colorBadge = '<span class="bg-rose-100 text-rose-700 text-xs px-3 py-1 rounded-xl font-medium">🔴 อันตราย</span>';
-                    else if (d.color === 'yellow') colorBadge = '<span class="bg-amber-100 text-amber-800 text-xs px-3 py-1 rounded-xl font-medium">🟡 กระทบชีวิต</span>';
-                    else colorBadge = '<span class="bg-emerald-100 text-emerald-700 text-xs px-3 py-1 rounded-xl font-medium">🟢 เร่งทำใน 3 วัน</span>';
-
-                    // Badge สำหรับสเต็ปขั้นตอน
-                    let stepBadge = '';
-                    if (d.step === '✅ เสร็จสิ้น') stepBadge = '<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 text-xs px-3 py-1 rounded-xl font-semibold">✅ เสร็จสิ้น</span>';
-                    else if (d.step === '🛠️ กำลังดำเนินการแก้ไข') stepBadge = '<span class="bg-blue-50 text-blue-600 border border-blue-200 text-xs px-3 py-1 rounded-xl font-semibold">🛠️ กำลังแก้ไข</span>';
-                    else if (d.step === '🔍 กำลังตรวจสอบ/ลงพื้นที่') stepBadge = '<span class="bg-amber-50 text-amber-600 border border-amber-200 text-xs px-3 py-1 rounded-xl font-semibold">🔍 กำลังตรวจสอบ</span>';
-                    else stepBadge = '<span class="bg-purple-50 text-purple-600 border border-purple-200 text-xs px-3 py-1 rounded-xl font-semibold">📥 รับเรื่องแล้ว</span>';
-
-                    rows += `
-                        <tr class="hover:bg-pink-50/20 transition">
-                            <td class="p-4 font-medium text-gray-500">${d.dateStr}</td>
-                            <td class="p-4 font-semibold text-gray-800">${d.community} <span class="text-xs font-normal text-gray-400 block">${d.soi}</span></td>
-                            <td class="p-4 text-gray-600 max-w-xs">${d.detail}</td>
-                            <td class="p-4">${colorBadge}</td>
-                            <td class="p-4">${stepBadge}</td>
-                        </tr>
-                    `;
+                allData = [];
+                querySnapshot.forEach(docSnap => {
+                    allData.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
-                document.getElementById('statToday').innerText = countToday;
-                document.getElementById('statMonth').innerText = countMonth;
-                document.getElementById('statYear').innerText = countYear;
-
-                document.getElementById('colorBlack').innerText = cBlack;
-                document.getElementById('colorRed').innerText = cRed;
-                document.getElementById('colorYellow').innerText = cYellow;
-                document.getElementById('colorGreen').innerText = cGreen;
-
-                document.getElementById('caseTableBody').innerHTML = rows || `<tr><td colspan="5" class="p-8 text-center text-gray-400">ยังไม่มีรายการคำร้องวันนี้ 🍃</td></tr>`;
-            } catch (err) {
-                console.error(err);
+                updateKPIs(allData);
+                renderCharts(allData);
+                renderTable(allData);
+            } catch (error) {
+                console.error("Error loading data:", error);
+                publicTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</td></tr>`;
             }
         }
 
-        loadData();
+        function updateKPIs(data) {
+            document.getElementById('statTotal').textContent = data.length;
+            const pending = data.filter(item => item.step !== 'ดำเนินการเสร็จสิ้น').length;
+            const completed = data.filter(item => item.step === 'ดำเนินการเสร็จสิ้น').length;
+
+            const now = new Date();
+            const overdue = data.filter(item => {
+                if(item.step === 'ดำเนินการเสร็จสิ้น') return false;
+                const created = new Date(item.createdAt);
+                const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+                return diffDays > 7;
+            }).length;
+
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statCompleted').textContent = completed;
+            document.getElementById('statOverdue').textContent = overdue;
+        }
+
+        function renderCharts(data) {
+            // 1. Chart คำนวณตามขั้นตอน (Step)
+            const steps = ['รับเรื่อง', 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น'];
+            const stepCounts = steps.map(s => data.filter(i => i.step === s).length);
+
+            if(stepChartInstance) stepChartInstance.destroy();
+            const ctxStep = document.getElementById('stepChart').getContext('2d');
+            stepChartInstance = new Chart(ctxStep, {
+                type: 'bar',
+                data: {
+                    labels: ['1. รับเรื่อง', '2. ส่งเรื่องให้ฝ่ายฯ', '3. กำลังดำเนินการ', '4. เสร็จสิ้น'],
+                    datasets: [{
+                        label: 'จำนวนเคส',
+                        data: stepCounts,
+                        backgroundColor: ['#6366f1', '#3b82f6', '#f59e0b', '#10b981']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 2. Chart คำนวณตาม กอง/สำนัก (Department)
+            const deptMap = {};
+            data.forEach(item => {
+                const dept = item.department || 'ไม่ระบุ';
+                deptMap[dept] = (deptMap[dept] || 0) + 1;
+            });
+
+            if(deptChartInstance) deptChartInstance.destroy();
+            const ctxDept = document.getElementById('deptChart').getContext('2d');
+            deptChartInstance = new Chart(ctxDept, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(deptMap),
+                    datasets: [{
+                        data: Object.values(deptMap),
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b', '#06b6d4']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderTable(data) {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedCat = filterCategory.value;
+            const selectedDept = filterDepartment.value;
+            const selectedStep = filterStep.value;
+
+            const filtered = data.filter(item => {
+                const matchSearch = (item.subject || '').toLowerCase().includes(searchText) ||
+                                    (item.community || '').toLowerCase().includes(searchText) ||
+                                    (item.location || '').toLowerCase().includes(searchText);
+
+                const matchCat = selectedCat === 'all' || item.category === selectedCat;
+                const matchDept = selectedDept === 'all' || item.department === selectedDept;
+                const matchStep = selectedStep === 'all' || item.step === selectedStep;
+
+                return matchSearch && matchCat && matchDept && matchStep;
+            });
+
+            if (filtered.length === 0) {
+                publicTableBody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">ไม่พบรายการที่ตรงเงื่อนไข</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(item => {
+                const date = new Date(item.createdAt).toLocaleDateString('th-TH', {
+                    day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+
+                let colorBadge = '';
+                if(item.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-0.5 rounded-full">⚫ ดำ</span>';
+                else if(item.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">🔴 แดง</span>';
+                else if(item.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full">🟡 เหลือง</span>';
+                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full">🟢 เขียว</span>';
+
+                let stepBadge = '<span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-medium">' + (item.step || 'รับเรื่อง') + '</span>';
+                if(item.step === 'กำลังดำเนินการ') stepBadge = '<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg text-xs font-medium">3. กำลังดำเนินการ</span>';
+                if(item.step === 'ดำเนินการเสร็จสิ้น') stepBadge = '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg text-xs font-medium">4. เสร็จสิ้น</span>';
+
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-xs whitespace-nowrap text-slate-400">${date}</td>
+                        <td class="p-3 whitespace-nowrap">${colorBadge}</td>
+                        <td class="p-3">
+                            <div class="font-medium text-slate-800">${item.subject}</div>
+                            <div class="text-xs text-indigo-500">${item.category || 'ไม่ระบุ'}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="font-medium text-slate-700">🏡 ${item.community || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-400">📍 ${item.location || '-'}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded w-max mb-1">${item.department || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-500">👤 ${item.officer || 'ไม่ระบุ'}</div>
+                        </td>
+                        <td class="p-3 whitespace-nowrap">${stepBadge}</td>
+                        <td class="p-3 text-xs text-rose-500">
+                            ${item.obstacle && item.obstacle !== '-' ? `⚠️ ${item.obstacle}` : '<span class="text-slate-300">-</span>'}
+                        </td>
+                    </tr>
+                `;
+            });
+            publicTableBody.innerHTML = html;
+        }
+
+        // Search & Filter Events
+        [searchInput, filterCategory, filterDepartment, filterStep].forEach(el => {
+            el.addEventListener('input', () => renderTable(allData));
+        });
+
+        // Initialize
+        initDashboard();
     </script>
 </body>
 </html>
