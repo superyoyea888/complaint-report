@@ -41,11 +41,11 @@
             <form id="loginForm" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">อีเมล</label>
-                    <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="admin@example.com">
+                    <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="admin@example.com">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition" placeholder="••••••••">
+                    <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="••••••••">
                 </div>
                 <p id="loginError" class="text-rose-500 text-xs hidden"></p>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-md hover:shadow-lg">
@@ -165,6 +165,7 @@
                     <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
                     <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
                     <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
+                    <option value="อื่นๆ">อื่นๆ</option>
                 </select>
                 <select id="filterColor" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="all">ทุกระดับความด่วน (สี)</option>
@@ -213,6 +214,89 @@
 
     </div>
 
+    <!-- 3. Modal ป๊อบอัพสำหรับแก้ไขข้อมูล (Edit Modal) -->
+    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <span>✏️</span> แก้ไขรายการคำร้องเรียน
+                </h3>
+                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            
+            <form id="editComplaintForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input type="hidden" id="editDocId">
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">เรื่องร้องเรียน</label>
+                    <input type="text" id="editSubject" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">🏡 ชุมชน / หมู่บ้าน</label>
+                    <input type="text" id="editCommunity" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">📍 ซอย / ถนน / จุดสังเกต</label>
+                    <input type="text" id="editLocation" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">📂 ประเภทเรื่องร้องเรียน</label>
+                    <select id="editCategory" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
+                        <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
+                        <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
+                        <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
+                    <select id="editColor" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="black">⚫ เร่งด่วนวิกฤต (สีดำ)</option>
+                        <option value="red">🔴 เร่งด่วนมาก (สีแดง)</option>
+                        <option value="yellow">🟡 เร่งด่วนปานกลาง (สีเหลือง)</option>
+                        <option value="green">🟢 เรื่องทั่วไป (สีเขียว)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ กอง/สำนัก ที่รับผิดชอบ</label>
+                    <select id="editDepartment" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="สำนักปลัด">สำนักปลัด</option>
+                        <option value="สำนักเลขานุการเทศบาล">สำนักเลขานุการเทศบาล</option>
+                        <option value="สำนักการศึกษา">สำนักการศึกษา</option>
+                        <option value="กองสาธารณสุข">กองสาธารณสุข</option>
+                        <option value="กองคลัง">กองคลัง</option>
+                        <option value="กองช่าง">กองช่าง</option>
+                        <option value="กองการเจ้าหน้าที่">กองการเจ้าหน้าที่</option>
+                        <option value="กองสวัสดิการ">กองสวัสดิการ</option>
+                        <option value="กองยุทธศาสตร์และงบประมาณ">กองยุทธศาสตร์และงบประมาณ</option>
+                        <option value="กองการแพทย์">กองการแพทย์</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">👤 เจ้าหน้าที่ผู้รับผิดชอบ</label>
+                    <input type="text" id="editOfficer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">ขั้นตอนดำเนินงาน</label>
+                    <select id="editStep" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="รับเรื่อง">1. รับเรื่อง</option>
+                        <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง</option>
+                        <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
+                        <option value="ดำเนินการเสร็จสิ้น">4. ดำเนินการเสร็จสิ้น</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
+                    <input type="text" id="editObstacle" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="md:col-span-2 flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
+                    <button type="button" id="cancelModalBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-medium transition">ยกเลิก</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-medium transition shadow">บันทึกการแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Firebase Script (Module) -->
     <script type="module">
         import { 
@@ -243,6 +327,12 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const addComplaintForm = document.getElementById('addComplaintForm');
         const complaintTableBody = document.getElementById('complaintTableBody');
+
+        // Modal Elements
+        const editModal = document.getElementById('editModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const editComplaintForm = document.getElementById('editComplaintForm');
 
         // Search & Filters
         const searchInput = document.getElementById('searchInput');
@@ -409,10 +499,15 @@
                         <td class="p-3 text-xs text-rose-500">
                             ${data.obstacle && data.obstacle !== '-' ? `⚠️ ${data.obstacle}` : '<span class="text-slate-300">-</span>'}
                         </td>
-                        <td class="p-3 text-center">
-                            <button onclick="window.deleteComplaint('${data.id}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition">
-                                ลบ
-                            </button>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1">
+                                <button onclick="window.openEditModal('${data.id}')" class="text-amber-600 hover:text-amber-800 text-xs font-medium bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition">
+                                    ✏️ แก้ไข
+                                </button>
+                                <button onclick="window.deleteComplaint('${data.id}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition">
+                                    ลบ
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
@@ -425,7 +520,58 @@
             el.addEventListener('input', () => renderTable(allComplaintsData));
         });
 
-        // 8. ฟังก์ชั่นอัปเดตขั้นตอน
+        // 8. ฟังก์ชั่นเปิด Modal และโหลดข้อมูลสำหรับแก้ไข
+        window.openEditModal = (id) => {
+            const item = allComplaintsData.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('editDocId').value = item.id;
+            document.getElementById('editSubject').value = item.subject || '';
+            document.getElementById('editCommunity').value = item.community || '';
+            document.getElementById('editLocation').value = item.location || '';
+            document.getElementById('editCategory').value = item.category || '🛠️ โครงสร้างพื้นฐาน';
+            document.getElementById('editColor').value = item.color || 'green';
+            document.getElementById('editDepartment').value = item.department || 'สำนักปลัด';
+            document.getElementById('editOfficer').value = item.officer || '';
+            document.getElementById('editStep').value = item.step || 'รับเรื่อง';
+            document.getElementById('editObstacle').value = item.obstacle || '';
+
+            editModal.classList.remove('hidden');
+        };
+
+        // ฟังก์ชั่นปิด Modal
+        const closeModal = () => editModal.classList.add('hidden');
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+
+        // 9. ฟังก์ชั่นบันทึกข้อมูลการแก้ไข
+        editComplaintForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const docId = document.getElementById('editDocId').value;
+
+            try {
+                const docRef = doc(db, "complaints", docId);
+                await updateDoc(docRef, {
+                    subject: document.getElementById('editSubject').value,
+                    community: document.getElementById('editCommunity').value,
+                    location: document.getElementById('editLocation').value || "-",
+                    category: document.getElementById('editCategory').value,
+                    color: document.getElementById('editColor').value,
+                    department: document.getElementById('editDepartment').value,
+                    officer: document.getElementById('editOfficer').value || "ยังไม่ได้ระบุ",
+                    step: document.getElementById('editStep').value,
+                    obstacle: document.getElementById('editObstacle').value || "-"
+                });
+
+                closeModal();
+                loadComplaints();
+                alert("อัปเดตข้อมูลเรียบร้อยแล้ว!");
+            } catch (error) {
+                alert("เกิดข้อผิดพลาดในการแก้ไข: " + error.message);
+            }
+        });
+
+        // 10. ฟังก์ชั่นอัปเดตขั้นตอนแบบด่วน
         window.updateStep = async (id, newStep) => {
             try {
                 const docRef = doc(db, "complaints", id);
@@ -436,7 +582,7 @@
             }
         };
 
-        // 9. ฟังก์ชั่นลบรายการ
+        // 11. ฟังก์ชั่นลบรายการ
         window.deleteComplaint = async (id) => {
             if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?")) {
                 try {
