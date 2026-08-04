@@ -109,10 +109,10 @@
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
                     <select id="caseColor" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="black">⚫ เร่งด่วนวิกฤต (สีดำ)</option>
-                        <option value="red">🔴 เร่งด่วนมาก (สีแดง)</option>
-                        <option value="yellow">🟡 เร่งด่วนปานกลาง (สีเหลือง)</option>
-                        <option value="green">🟢 เรื่องทั่วไป (สีเขียว)</option>
+                        <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน (สีดำ)</option>
+                        <option value="red">🔴 เป็นอันตรายต่อประชาชน (สีแดง)</option>
+                        <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน (สีเหลือง)</option>
+                        <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน (สีเขียว)</option>
                     </select>
                 </div>
                 <div>
@@ -169,10 +169,10 @@
                 </select>
                 <select id="filterColor" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="all">ทุกระดับความด่วน (สี)</option>
-                    <option value="black">⚫ ดำ (วิกฤต)</option>
-                    <option value="red">🔴 แดง (เร่งด่วนมาก)</option>
-                    <option value="yellow">🟡 เหลือง (ปานกลาง)</option>
-                    <option value="green">🟢 เขียว (ทั่วไป)</option>
+                    <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน</option>
+                    <option value="red">🔴 เป็นอันตรายต่อประชาชน</option>
+                    <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน</option>
+                    <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน</option>
                 </select>
                 <select id="filterStep" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="all">ทุกขั้นตอนดำเนินงาน</option>
@@ -194,7 +194,7 @@
                     <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
                         <tr>
                             <th class="p-3 rounded-l-lg">วันที่/เวลา</th>
-                            <th class="p-3">ระดับ</th>
+                            <th class="p-3">ระดับความด่วน</th>
                             <th class="p-3">เรื่อง / ประเภท</th>
                             <th class="p-3">🏡 สถานที่ (ชุมชน/ซอย)</th>
                             <th class="p-3">🏛️ กอง/สำนัก / เจ้าหน้าที่</th>
@@ -251,10 +251,10 @@
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
                     <select id="editColor" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="black">⚫ เร่งด่วนวิกฤต (สีดำ)</option>
-                        <option value="red">🔴 เร่งด่วนมาก (สีแดง)</option>
-                        <option value="yellow">🟡 เร่งด่วนปานกลาง (สีเหลือง)</option>
-                        <option value="green">🟢 เรื่องทั่วไป (สีเขียว)</option>
+                        <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน</option>
+                        <option value="red">🔴 เป็นอันตรายต่อประชาชน</option>
+                        <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน</option>
+                        <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน</option>
                     </select>
                 </div>
                 <div>
@@ -467,10 +467,10 @@
                 });
 
                 let colorBadge = '';
-                if(data.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-1 rounded-full">⚫ ดำ</span>';
-                else if(data.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">🔴 แดง</span>';
-                else if(data.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-1 rounded-full">🟡 เหลือง</span>';
-                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">🟢 เขียว</span>';
+                if(data.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2.5 py-1 rounded-full font-medium" title="นำเรียนผู้บริหารอย่างเร่งด่วน">⚫ นำเรียนผู้บริหาร</span>';
+                else if(data.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2.5 py-1 rounded-full font-medium" title="เป็นอันตรายต่อประชาชน">🔴 อันตราย</span>';
+                else if(data.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2.5 py-1 rounded-full font-medium" title="กระทบต่อการใช้ชีวิตประชาชน">🟡 กระทบการใช้ชีวิต</span>';
+                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full font-medium" title="ทำให้แล้วเสร็จไม่เกิน 7 วัน">🟢 แล้วเสร็จใน 7 วัน</span>';
 
                 html += `
                     <tr class="hover:bg-slate-50">
