@@ -5,7 +5,7 @@ import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, q
 
 // ⚠️ นำค่าจากหน้า Firebase Console (จุดที่กด Register app) มาวางแทนที่ค่าจำลองด้านล่างนี้ครับ ⚠️
 const firebaseConfig = {
-   piKey: "AIzaSyBi1LCzz4g6JoWbnXJR0ct3rs8k8YlPTVo",
+  apiKey: "AIzaSyBi1LCzz4g6JoWbnXJR0ct3rs8k8YlPTVo",
   authDomain: "onlinealert-2d6e0.firebaseapp.com",
   projectId: "onlinealert-2d6e0",
   storageBucket: "onlinealert-2d6e0.firebasestorage.app",
