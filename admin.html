@@ -12,7 +12,7 @@
         body { font-family: 'Prompt', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen pb-12">
 
     <!-- Header / Navbar -->
     <nav class="bg-indigo-900 text-white shadow-md">
@@ -55,15 +55,35 @@
         </div>
     </div>
 
-    <!-- 2. หน้าจัดการข้อมูล ( Admin Dashboard - ซ่อนไว้ก่อนล็อกอิน ) -->
+    <!-- 2. หน้าจัดการข้อมูล ( Admin Dashboard ) -->
     <div id="adminSection" class="hidden max-w-7xl mx-auto px-4 py-8">
         
-        <!-- ฟอร์มเพิ่มคำร้องเรียนใหม่ -->
+        <!-- KPI & Executive Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">เรื่องทั้งหมด</p>
+                <h3 id="statTotal" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-amber-600">กำลังดำเนินการ</p>
+                <h3 id="statPending" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-emerald-600">เสร็จสิ้นแล้ว</p>
+                <h3 id="statCompleted" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <p class="text-xs font-semibold text-rose-600">⚠️ ตกค้างเกิน 7 วัน</p>
+                <h3 id="statOverdue" class="text-3xl font-bold text-rose-600 mt-1">0</h3>
+            </div>
+        </div>
+
+        <!-- ฟอร์มบันทึกคำร้องเรียนใหม่ -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
             <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>➕</span> บันทึกคำร้องเรียน / ร้องทุกข์ใหม่
             </h3>
-            <form id="addComplaintForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <form id="addComplaintForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">ผู้ร้องเรียน</label>
                     <input type="text" id="complainantName" placeholder="ชื่อ-สกุล / ผู้แจ้ง" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
@@ -71,6 +91,16 @@
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">เรื่องร้องเรียน</label>
                     <input type="text" id="complaintSubject" placeholder="เช่น ท่อประปาแตก / ไฟถนนดับ" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">📂 ประเภทเรื่องร้องเรียน</label>
+                    <select id="category" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน (ถนน/ไฟฟ้า/ประปา)</option>
+                        <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ/น้ำเสีย</option>
+                        <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ/เสียงดัง</option>
+                        <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร/ติดต่อสอบถาม</option>
+                        <option value="อื่นๆ">อื่นๆ</option>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
@@ -82,6 +112,21 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ หน่วยงานที่รับผิดชอบ</label>
+                    <select id="assignedDepartment" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                        <option value="สำนักช่าง">สำนักช่าง / งานสาธารณูปโภค</option>
+                        <option value="กองสาธารณสุข">กองสาธารณสุขและสิ่งแวดล้อม</option>
+                        <option value="ฝ่ายจัดเก็บรายรับ">ฝ่ายจัดเก็บรายรับ / งานรายได้</option>
+                        <option value="งานป้องกันฯ">งานป้องกันและบรรเทาสาธารณภัย</option>
+                        <option value="สำนักการศึกษา">สำนักการศึกษา</option>
+                        <option value="สำนักปลัด">สำนักปลัดเทศบาล/อบต.</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">👤 เจ้าหน้าที่ผู้รับผิดชอบ</label>
+                    <input type="text" id="assignedOfficer" placeholder="ชื่อ-สกุล เจ้าหน้าที่ผู้รับเคส" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">ขั้นตอนดำเนินงาน</label>
                     <select id="caseStep" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         <option value="รับเรื่อง">1. รับเรื่อง</option>
@@ -90,12 +135,44 @@
                         <option value="ดำเนินการเสร็จสิ้น">4. ดำเนินการเสร็จสิ้น</option>
                     </select>
                 </div>
-                <div class="md:col-span-2 lg:col-span-4 flex justify-end mt-2">
+                <div class="md:col-span-2 lg:col-span-2">
+                    <label class="block text-xs font-medium text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
+                    <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ, เข้าพื้นที่ไม่ได้" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div class="md:col-span-2 lg:col-span-3 flex justify-end mt-2">
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2 rounded-xl text-sm transition shadow">
                         บันทึกรายการ
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อผู้แจ้ง / เรื่อง..." class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                <select id="filterCategory" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกประเภทเรื่อง</option>
+                    <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
+                    <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
+                    <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
+                    <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
+                </select>
+                <select id="filterColor" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกระดับความด่วน (สี)</option>
+                    <option value="black">⚫ ดำ (วิกฤต)</option>
+                    <option value="red">🔴 แดง (เร่งด่วนมาก)</option>
+                    <option value="yellow">🟡 เหลือง (ปานกลาง)</option>
+                    <option value="green">🟢 เขียว (ทั่วไป)</option>
+                </select>
+                <select id="filterStep" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">ทุกขั้นตอนดำเนินงาน</option>
+                    <option value="รับเรื่อง">1. รับเรื่อง</option>
+                    <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายฯ</option>
+                    <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
+                    <option value="ดำเนินการเสร็จสิ้น">4. เสร็จสิ้น</option>
+                </select>
+            </div>
         </div>
 
         <!-- รายการคำร้องทั้งหมด -->
@@ -110,14 +187,16 @@
                             <th class="p-3 rounded-l-lg">วันที่/เวลา</th>
                             <th class="p-3">ระดับ</th>
                             <th class="p-3">ผู้ร้องเรียน</th>
-                            <th class="p-3">เรื่อง</th>
+                            <th class="p-3">เรื่อง / ประเภท</th>
+                            <th class="p-3">🏛️ หน่วยงาน/เจ้าหน้าที่</th>
                             <th class="p-3">ขั้นตอนปัจจุบัน</th>
+                            <th class="p-3">⚠️ ปัญหา/อุปสรรค</th>
                             <th class="p-3 text-center rounded-r-lg">จัดการ</th>
                         </tr>
                     </thead>
                     <tbody id="complaintTableBody" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="6" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
+                            <td colspan="8" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -144,6 +223,8 @@
             orderBy 
         } from "./app.js";
 
+        let allComplaintsData = [];
+
         // DOM Elements
         const loginSection = document.getElementById('loginSection');
         const adminSection = document.getElementById('adminSection');
@@ -154,6 +235,12 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const addComplaintForm = document.getElementById('addComplaintForm');
         const complaintTableBody = document.getElementById('complaintTableBody');
+
+        // Search & Filters
+        const searchInput = document.getElementById('searchInput');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterColor = document.getElementById('filterColor');
+        const filterStep = document.getElementById('filterStep');
 
         // 1. ตรวจสอบสถานะการล็อกอิน
         onAuthStateChanged(auth, (user) => {
@@ -192,17 +279,16 @@
         // 4. ฟังก์ชั่นเพิ่มคำร้องเรียนใหม่
         addComplaintForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('complainantName').value;
-            const subject = document.getElementById('complaintSubject').value;
-            const color = document.getElementById('caseColor').value;
-            const step = document.getElementById('caseStep').value;
-
             try {
                 await addDoc(collection(db, "complaints"), {
-                    complainantName: name,
-                    subject: subject,
-                    color: color,
-                    step: step,
+                    complainantName: document.getElementById('complainantName').value,
+                    subject: document.getElementById('complaintSubject').value,
+                    category: document.getElementById('category').value,
+                    color: document.getElementById('caseColor').value,
+                    department: document.getElementById('assignedDepartment').value,
+                    officer: document.getElementById('assignedOfficer').value || "ยังไม่ได้ระบุ",
+                    step: document.getElementById('caseStep').value,
+                    obstacle: document.getElementById('obstacle').value || "-",
                     createdAt: new Date().toISOString()
                 });
                 addComplaintForm.reset();
@@ -215,71 +301,127 @@
 
         // 5. ดึงรายการคำร้องมาแสดงผล
         async function loadComplaints() {
-            complaintTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td></tr>';
+            complaintTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td></tr>';
             try {
                 const q = query(collection(db, "complaints"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
                 
-                if (querySnapshot.empty) {
-                    complaintTableBody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-400">ยังไม่มีข้อมูลคำร้องเรียน</td></tr>';
-                    return;
-                }
-
-                let html = '';
+                allComplaintsData = [];
                 querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const id = docSnap.id;
-                    const date = new Date(data.createdAt).toLocaleDateString('th-TH', {
-                        day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit'
-                    });
-
-                    // แปลงสัญลักษณ์สี
-                    let colorBadge = '';
-                    if(data.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-1 rounded-full">⚫ ดำ</span>';
-                    else if(data.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">🔴 แดง</span>';
-                    else if(data.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-1 rounded-full">🟡 เหลือง</span>';
-                    else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">🟢 เขียว</span>';
-
-                    html += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="p-3 text-xs whitespace-nowrap text-slate-400">${date}</td>
-                            <td class="p-3 whitespace-nowrap">${colorBadge}</td>
-                            <td class="p-3 font-medium text-slate-800">${data.complainantName}</td>
-                            <td class="p-3 text-slate-700">${data.subject}</td>
-                            <td class="p-3">
-                                <select onchange="window.updateStep('${id}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:ring-1 focus:ring-indigo-500 outline-none">
-                                    <option value="รับเรื่อง" ${data.step === 'รับเรื่อง' ? 'selected' : ''}>1. รับเรื่อง</option>
-                                    <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง" ${data.step === 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง' ? 'selected' : ''}>2. ส่งเรื่องให้ฝ่ายฯ</option>
-                                    <option value="กำลังดำเนินการ" ${data.step === 'กำลังดำเนินการ' ? 'selected' : ''}>3. กำลังดำเนินการ</option>
-                                    <option value="ดำเนินการเสร็จสิ้น" ${data.step === 'ดำเนินการเสร็จสิ้น' ? 'selected' : ''}>4. เสร็จสิ้น</option>
-                                </select>
-                            </td>
-                            <td class="p-3 text-center">
-                                <button onclick="window.deleteComplaint('${id}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition">
-                                    ลบ
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+                    allComplaintsData.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                complaintTableBody.innerHTML = html;
+
+                calculateKPIs(allComplaintsData);
+                renderTable(allComplaintsData);
             } catch (error) {
-                complaintTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-rose-500">โหลดข้อมูลไม่สำเร็จ: ${error.message}</td></tr>`;
+                complaintTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500">โหลดข้อมูลไม่สำเร็จ: ${error.message}</td></tr>`;
             }
         }
 
-        // 6. ฟังก์ชั่นอัปเดตขั้นตอน (ผูกเข้ากับ window เพื่อให้กดจาก HTML ได้)
+        // 6. คำนวณ KPI สถิติ
+        function calculateKPIs(data) {
+            document.getElementById('statTotal').textContent = data.length;
+            const pending = data.filter(item => item.step !== 'ดำเนินการเสร็จสิ้น').length;
+            const completed = data.filter(item => item.step === 'ดำเนินการเสร็จสิ้น').length;
+            
+            // สรุปตกค้างเกิน 7 วัน
+            const now = new Date();
+            const overdue = data.filter(item => {
+                if(item.step === 'ดำเนินการเสร็จสิ้น') return false;
+                const created = new Date(item.createdAt);
+                const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
+                return diffDays > 7;
+            }).length;
+
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statCompleted').textContent = completed;
+            document.getElementById('statOverdue').textContent = overdue;
+        }
+
+        // 7. แสดงผลลงในตารางตามการกรอง
+        function renderTable(data) {
+            const searchText = searchInput.value.toLowerCase();
+            const selectedCategory = filterCategory.value;
+            const selectedColor = filterColor.value;
+            const selectedStep = filterStep.value;
+
+            const filteredData = data.filter(item => {
+                const matchSearch = item.complainantName.toLowerCase().includes(searchText) || item.subject.toLowerCase().includes(searchText);
+                const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
+                const matchColor = selectedColor === 'all' || item.color === selectedColor;
+                const matchStep = selectedStep === 'all' || item.step === selectedStep;
+                return matchSearch && matchCat && matchColor && matchStep;
+            });
+
+            if (filteredData.length === 0) {
+                complaintTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">ไม่พบข้อมูลที่ตรงตามเงื่อนไข</td></tr>';
+                return;
+            }
+
+            let html = '';
+            filteredData.forEach((data) => {
+                const date = new Date(data.createdAt).toLocaleDateString('th-TH', {
+                    day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit'
+                });
+
+                let colorBadge = '';
+                if(data.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-1 rounded-full">⚫ ดำ</span>';
+                else if(data.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">🔴 แดง</span>';
+                else if(data.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-1 rounded-full">🟡 เหลือง</span>';
+                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-1 rounded-full">🟢 เขียว</span>';
+
+                html += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-3 text-xs whitespace-nowrap text-slate-400">${date}</td>
+                        <td class="p-3 whitespace-nowrap">${colorBadge}</td>
+                        <td class="p-3 font-medium text-slate-800">${data.complainantName}</td>
+                        <td class="p-3">
+                            <div class="font-medium text-slate-700">${data.subject}</div>
+                            <div class="text-xs text-indigo-500 font-normal">${data.category || 'ไม่ระบุ'}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded w-max mb-1">${data.department || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-500">👤 ${data.officer || 'ไม่ระบุ'}</div>
+                        </td>
+                        <td class="p-3">
+                            <select onchange="window.updateStep('${data.id}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:ring-1 focus:ring-indigo-500 outline-none">
+                                <option value="รับเรื่อง" ${data.step === 'รับเรื่อง' ? 'selected' : ''}>1. รับเรื่อง</option>
+                                <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง" ${data.step === 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง' ? 'selected' : ''}>2. ส่งเรื่องให้ฝ่ายฯ</option>
+                                <option value="กำลังดำเนินการ" ${data.step === 'กำลังดำเนินการ' ? 'selected' : ''}>3. กำลังดำเนินการ</option>
+                                <option value="ดำเนินการเสร็จสิ้น" ${data.step === 'ดำเนินการเสร็จสิ้น' ? 'selected' : ''}>4. เสร็จสิ้น</option>
+                            </select>
+                        </td>
+                        <td class="p-3 text-xs text-rose-500">
+                            ${data.obstacle && data.obstacle !== '-' ? `⚠️ ${data.obstacle}` : '<span class="text-slate-300">-</span>'}
+                        </td>
+                        <td class="p-3 text-center">
+                            <button onclick="window.deleteComplaint('${data.id}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition">
+                                ลบ
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            complaintTableBody.innerHTML = html;
+        }
+
+        // Event Listeners การกรองข้อมูล
+        [searchInput, filterCategory, filterColor, filterStep].forEach(el => {
+            el.addEventListener('input', () => renderTable(allComplaintsData));
+        });
+
+        // 8. ฟังก์ชั่นอัปเดตขั้นตอน
         window.updateStep = async (id, newStep) => {
             try {
                 const docRef = doc(db, "complaints", id);
                 await updateDoc(docRef, { step: newStep });
-                alert("อัปเดตขั้นตอนเรียบร้อยแล้ว");
+                loadComplaints();
             } catch (error) {
                 alert("อัปเดตไม่สำเร็จ: " + error.message);
             }
         };
 
-        // 7. ฟังก์ชั่นลบรายการ
+        // 9. ฟังก์ชั่นลบรายการ
         window.deleteComplaint = async (id) => {
             if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?")) {
                 try {
