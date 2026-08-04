@@ -58,7 +58,7 @@
     <!-- 2. หน้าจัดการข้อมูล ( Admin Dashboard ) -->
     <div id="adminSection" class="hidden max-w-7xl mx-auto px-4 py-8">
         
-        <!-- KPI & Executive Summary Cards -->
+        <!-- KPI Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500">เรื่องทั้งหมด</p>
@@ -85,12 +85,16 @@
             </h3>
             <form id="addComplaintForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">ผู้ร้องเรียน</label>
-                    <input type="text" id="complainantName" placeholder="ชื่อ-สกุล / ผู้แจ้ง" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">เรื่องร้องเรียน</label>
                     <input type="text" id="complaintSubject" placeholder="เช่น ท่อประปาแตก / ไฟถนนดับ" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">🏡 ชุมชน / หมู่บ้าน</label>
+                    <input type="text" id="community" placeholder="ระบุชื่อชุมชน หรือ หมู่ที่..." required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">📍 ซอย / ถนน / จุดสังเกต</label>
+                    <input type="text" id="location" placeholder="เช่น ซอย 5 / หน้าวัด / ข้างโรงเรียน" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">📂 ประเภทเรื่องร้องเรียน</label>
@@ -112,7 +116,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ หน่วยงานที่รับผิดชอบ</label>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ กองงานที่รับผิดชอบ</label>
                     <select id="assignedDepartment" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                         <option value="สำนักช่าง">สำนักช่าง / งานสาธารณูปโภค</option>
                         <option value="กองสาธารณสุข">กองสาธารณสุขและสิ่งแวดล้อม</option>
@@ -135,9 +139,9 @@
                         <option value="ดำเนินการเสร็จสิ้น">4. ดำเนินการเสร็จสิ้น</option>
                     </select>
                 </div>
-                <div class="md:col-span-2 lg:col-span-2">
+                <div>
                     <label class="block text-xs font-medium text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
-                    <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ, เข้าพื้นที่ไม่ได้" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
                 <div class="md:col-span-2 lg:col-span-3 flex justify-end mt-2">
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2 rounded-xl text-sm transition shadow">
@@ -150,7 +154,7 @@
         <!-- Filter & Search Bar -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <input type="text" id="searchInput" placeholder="🔍 ค้นหาชื่อผู้แจ้ง / เรื่อง..." class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                <input type="text" id="searchInput" placeholder="🔍 ค้นหาเรื่อง / ชุมชน / ซอย..." class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 <select id="filterCategory" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                     <option value="all">ทุกประเภทเรื่อง</option>
                     <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
@@ -186,9 +190,9 @@
                         <tr>
                             <th class="p-3 rounded-l-lg">วันที่/เวลา</th>
                             <th class="p-3">ระดับ</th>
-                            <th class="p-3">ผู้ร้องเรียน</th>
                             <th class="p-3">เรื่อง / ประเภท</th>
-                            <th class="p-3">🏛️ หน่วยงาน/เจ้าหน้าที่</th>
+                            <th class="p-3">🏡 สถานที่ (ชุมชน/ซอย)</th>
+                            <th class="p-3">🏛️ กองงาน/เจ้าหน้าที่</th>
                             <th class="p-3">ขั้นตอนปัจจุบัน</th>
                             <th class="p-3">⚠️ ปัญหา/อุปสรรค</th>
                             <th class="p-3 text-center rounded-r-lg">จัดการ</th>
@@ -281,8 +285,9 @@
             e.preventDefault();
             try {
                 await addDoc(collection(db, "complaints"), {
-                    complainantName: document.getElementById('complainantName').value,
                     subject: document.getElementById('complaintSubject').value,
+                    community: document.getElementById('community').value,
+                    location: document.getElementById('location').value || "-",
                     category: document.getElementById('category').value,
                     color: document.getElementById('caseColor').value,
                     department: document.getElementById('assignedDepartment').value,
@@ -324,7 +329,6 @@
             const pending = data.filter(item => item.step !== 'ดำเนินการเสร็จสิ้น').length;
             const completed = data.filter(item => item.step === 'ดำเนินการเสร็จสิ้น').length;
             
-            // สรุปตกค้างเกิน 7 วัน
             const now = new Date();
             const overdue = data.filter(item => {
                 if(item.step === 'ดำเนินการเสร็จสิ้น') return false;
@@ -346,7 +350,11 @@
             const selectedStep = filterStep.value;
 
             const filteredData = data.filter(item => {
-                const matchSearch = item.complainantName.toLowerCase().includes(searchText) || item.subject.toLowerCase().includes(searchText);
+                const subjectMatch = (item.subject || '').toLowerCase().includes(searchText);
+                const commMatch = (item.community || '').toLowerCase().includes(searchText);
+                const locMatch = (item.location || '').toLowerCase().includes(searchText);
+                
+                const matchSearch = subjectMatch || commMatch || locMatch;
                 const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
                 const matchColor = selectedColor === 'all' || item.color === selectedColor;
                 const matchStep = selectedStep === 'all' || item.step === selectedStep;
@@ -374,10 +382,13 @@
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 text-xs whitespace-nowrap text-slate-400">${date}</td>
                         <td class="p-3 whitespace-nowrap">${colorBadge}</td>
-                        <td class="p-3 font-medium text-slate-800">${data.complainantName}</td>
                         <td class="p-3">
-                            <div class="font-medium text-slate-700">${data.subject}</div>
+                            <div class="font-medium text-slate-800">${data.subject}</div>
                             <div class="text-xs text-indigo-500 font-normal">${data.category || 'ไม่ระบุ'}</div>
+                        </td>
+                        <td class="p-3">
+                            <div class="font-medium text-slate-700">🏡 ${data.community || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-400">📍 ${data.location || '-'}</div>
                         </td>
                         <td class="p-3">
                             <div class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded w-max mb-1">${data.department || 'ไม่ระบุ'}</div>
