@@ -22,7 +22,7 @@
             <h1 class="text-xl font-bold flex items-center gap-2">
                 <span>🏛️</span> ระบบติดตามเรื่องร้องเรียน/ร้องทุกข์
             </h1>
-            <a href="admin.html" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-xs font-medium transition shadow">
+            <a href="admin.html" class="bg-indigo-700 hover:bg-indigo-600 px-4 py-2 rounded-xl text-xs font-medium transition shadow flex items-center gap-1">
                 🔑 เข้าสู่ระบบเจ้าหน้าที่
             </a>
         </div>
@@ -116,18 +116,32 @@
                             <th class="p-3">🏡 สถานที่ (ชุมชน/ซอย)</th>
                             <th class="p-3">🏛️ กอง/สำนัก / ผู้รับผิดชอบ</th>
                             <th class="p-3">ขั้นตอนปัจจุบัน</th>
-                            <th class="p-3 rounded-r-lg">⚠️ ปัญหา/อุปสรรค</th>
+                            <th class="p-3">⚠️ ปัญหา/อุปสรรค</th>
+                            <th class="p-3 text-center rounded-r-lg">รายละเอียด</th>
                         </tr>
                     </thead>
                     <tbody id="publicTableBody" class="divide-y divide-slate-100">
                         <tr>
-                            <td colspan="7" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
+                            <td colspan="8" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal สำหรับดูรูปภาพ/รายละเอียด -->
+    <div id="imageModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-5 border border-slate-100">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-base font-bold text-slate-800">📷 รูปภาพประกอบสถานที่</h3>
+                <button id="closeImgModal" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            <div class="bg-slate-100 rounded-xl overflow-hidden flex justify-center items-center min-h-[250px]">
+                <img id="modalImg" src="" alt="สถานที่เกิดเหตุ" class="max-h-[70vh] w-auto object-contain">
+            </div>
+        </div>
     </div>
 
     <!-- Firebase Script -->
@@ -144,6 +158,10 @@
         const filterStep = document.getElementById('filterStep');
         const publicTableBody = document.getElementById('publicTableBody');
 
+        const imageModal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImg');
+        const closeImgModal = document.getElementById('closeImgModal');
+
         async function initDashboard() {
             try {
                 const q = query(collection(db, "complaints"), orderBy("createdAt", "desc"));
@@ -159,7 +177,7 @@
                 renderTable(allData);
             } catch (error) {
                 console.error("Error loading data:", error);
-                publicTableBody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-rose-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</td></tr>`;
+                publicTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500">เกิดข้อผิดพลาดในการโหลดข้อมูล: ${error.message}</td></tr>`;
             }
         }
 
@@ -242,7 +260,7 @@
             });
 
             if (filtered.length === 0) {
-                publicTableBody.innerHTML = '<tr><td colspan="7" class="text-center py-6 text-slate-400">ไม่พบรายการที่ตรงเงื่อนไข</td></tr>';
+                publicTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">ไม่พบรายการที่ตรงเงื่อนไข</td></tr>';
                 return;
             }
 
@@ -253,14 +271,19 @@
                 });
 
                 let colorBadge = '';
-                if(item.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-0.5 rounded-full">⚫ ดำ</span>';
-                else if(item.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">🔴 แดง</span>';
-                else if(item.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full">🟡 เหลือง</span>';
-                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full">🟢 เขียว</span>';
+                if(item.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-0.5 rounded-full font-medium">⚫ ดำ</span>';
+                else if(item.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">🔴 แดง</span>';
+                else if(item.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full font-medium">🟡 เหลือง</span>';
+                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full font-medium">🟢 เขียว</span>';
 
-                let stepBadge = '<span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-medium">' + (item.step || 'รับเรื่อง') + '</span>';
+                let stepBadge = '<span class="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg text-xs font-medium">' + (item.step || '1. รับเรื่อง') + '</span>';
+                if(item.step === 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง') stepBadge = '<span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg text-xs font-medium">2. ส่งเรื่องให้ฝ่ายฯ</span>';
                 if(item.step === 'กำลังดำเนินการ') stepBadge = '<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-lg text-xs font-medium">3. กำลังดำเนินการ</span>';
                 if(item.step === 'ดำเนินการเสร็จสิ้น') stepBadge = '<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-lg text-xs font-medium">4. เสร็จสิ้น</span>';
+
+                const imgBtn = item.imageUrl 
+                    ? `<button onclick="window.viewImage('${item.imageUrl}')" class="text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg text-xs font-medium transition flex items-center gap-1 mx-auto">🖼️ รูปภาพ</button>`
+                    : `<span class="text-slate-300 text-xs">-</span>`;
 
                 html += `
                     <tr class="hover:bg-slate-50">
@@ -282,11 +305,22 @@
                         <td class="p-3 text-xs text-rose-500">
                             ${item.obstacle && item.obstacle !== '-' ? `⚠️ ${item.obstacle}` : '<span class="text-slate-300">-</span>'}
                         </td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            ${imgBtn}
+                        </td>
                     </tr>
                 `;
             });
             publicTableBody.innerHTML = html;
         }
+
+        // View Image Function
+        window.viewImage = (url) => {
+            modalImg.src = url;
+            imageModal.classList.remove('hidden');
+        };
+
+        closeImgModal.addEventListener('click', () => imageModal.classList.add('hidden'));
 
         // Search & Filter Events
         [searchInput, filterCategory, filterDepartment, filterStep].forEach(el => {
