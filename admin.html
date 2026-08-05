@@ -3,183 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบจัดการหลังบ้าน - รับเรื่องร้องเรียน/ร้องทุกข์</title>
+    <title>ระบบจัดการหลังบ้าน - เรื่องร้องเรียน</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Prompt & Sarabun) -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Google Fonts (Prompt) -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Prompt', sans-serif; }
-
-        /* Style สำหรับการพิมพ์เอกสาร A4 (จะทำงานเฉพาะตอนสั่งพิมพ์เท่านั้น) */
-        @media print {
-            @page { 
-                size: A4 portrait; 
-                margin: 0; 
-            }
-            body { 
-                background: white !important;
-                color: black !important;
-            }
-            /* ซ่อนส่วนประกอบของหน้าเว็บเดิมทั้งหมด */
-            nav, #loginSection, #adminSection, #editModal, .no-print { 
-                display: none !important; 
-            }
-            /* แสดงเฉพาะส่วนพื้นที่พิมพ์ A4 */
-            #printArea { 
-                display: flex !important; 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 210mm; 
-                height: 297mm; 
-                padding: 15mm 20mm; 
-                box-sizing: border-box; 
-            }
-        }
-
-        /* โครงสร้างหน้ากระดาษ A4 */
-        .a4-container {
-            width: 210mm;
-            min-height: 297mm;
-            padding: 15mm 20mm;
-            background: white;
-            font-family: 'Sarabun', 'TH Sarabun New', sans-serif !important;
-            font-size: 16pt;
-            line-height: 1.4;
-            color: #000;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box;
-        }
-
-        .a4-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        .a4-table td {
-            border: 1px solid #333;
-            padding: 6px 8px;
-            vertical-align: top;
-        }
-
-        .a4-table .label {
-            font-weight: bold;
-            background-color: #f8fafc;
-            width: 22%;
-        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-12">
+<body class="bg-slate-100 min-h-screen pb-12">
 
-    <!-- Header / Navbar -->
-    <nav class="bg-indigo-900 text-white shadow-md">
+    <!-- Navbar -->
+    <nav class="bg-slate-900 text-white shadow-md mb-8">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold flex items-center gap-2">
+            <h1 class="text-lg font-bold flex items-center gap-2">
                 <span>🔐</span> ระบบจัดการหลังบ้าน (เจ้าหน้าที่)
             </h1>
-            <div id="userInfo" class="hidden flex items-center gap-4">
-                <span id="userEmail" class="text-sm text-indigo-200"></span>
-                <button id="logoutBtn" class="bg-rose-500 hover:bg-rose-600 px-3 py-1.5 rounded-lg text-xs font-medium transition shadow">
+            <div class="flex items-center gap-4 text-xs">
+                <span id="userEmail" class="text-slate-300"></span>
+                <button id="logoutBtn" class="bg-rose-600 hover:bg-rose-500 px-3 py-1.5 rounded-lg font-medium transition hidden">
                     ออกจากระบบ
                 </button>
+                <a href="index.html" class="text-slate-400 hover:text-white transition">← กลับหน้าหลัก</a>
             </div>
-            <a href="index.html" class="text-sm text-indigo-200 hover:text-white flex items-center gap-1">
-                ← กลับหน้าหลัก
-            </a>
         </div>
     </nav>
 
-    <!-- 1. หน้าล็อกอิน ( Login Form ) -->
-    <div id="loginSection" class="max-w-md mx-auto mt-16 p-6">
-        <div class="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-            <h2 class="text-2xl font-bold text-center text-slate-800 mb-6 flex justify-center items-center gap-2">
-                เข้าสู่ระบบเจ้าหน้าที่ 🔑
-            </h2>
+    <!-- Section 1: Login Form (แสดงเมื่อยังไม่เข้าสู่ระบบ) -->
+    <div id="loginSection" class="max-w-md mx-auto px-4 py-12">
+        <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-200">
+            <h2 class="text-xl font-bold text-slate-800 text-center mb-6">🔑 เข้าสู่ระบบเจ้าหน้าที่</h2>
             <form id="loginForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">อีเมล</label>
-                    <input type="email" id="loginEmail" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="admin@example.com">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">อีเมลเจ้าหน้าที่</label>
+                    <input type="email" id="loginEmail" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน</label>
-                    <input type="password" id="loginPassword" required class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="••••••••">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">รหัสผ่าน</label>
+                    <input type="password" id="loginPassword" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <p id="loginError" class="text-rose-500 text-xs hidden"></p>
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-md hover:shadow-lg">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-semibold transition">
                     เข้าสู่ระบบ
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- 2. หน้าจัดการข้อมูล ( Admin Dashboard ) -->
-    <div id="adminSection" class="hidden max-w-7xl mx-auto px-4 py-8">
-        
-        <!-- KPI Cards -->
+    <!-- Section 2: Dashboard Content (แสดงเมื่อเข้าสู่ระบบแล้ว) -->
+    <div id="dashboardSection" class="max-w-7xl mx-auto px-4 hidden">
+
+        <!-- 1. KPI Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500">เรื่องทั้งหมด</p>
-                <h3 id="statTotal" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
+                <h3 id="adminStatTotal" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-amber-600">กำลังดำเนินการ</p>
-                <h3 id="statPending" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
+                <h3 id="adminStatPending" class="text-3xl font-bold text-amber-600 mt-1">0</h3>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-emerald-600">เสร็จสิ้นแล้ว</p>
-                <h3 id="statCompleted" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
+                <h3 id="adminStatCompleted" class="text-3xl font-bold text-emerald-600 mt-1">0</h3>
             </div>
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-rose-600">⚠️ ตกค้างเกิน 7 วัน</p>
-                <h3 id="statOverdue" class="text-3xl font-bold text-rose-600 mt-1">0</h3>
+                <h3 id="adminStatOverdue" class="text-3xl font-bold text-rose-600 mt-1">0</h3>
             </div>
         </div>
 
-        <!-- ฟอร์มบันทึกคำร้องเรียนใหม่ -->
+        <!-- 2. Form บันทึกเรื่องร้องเรียนใหม่ -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>➕</span> บันทึกคำร้องเรียน / ร้องทุกข์ใหม่
             </h3>
-            <form id="addComplaintForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="addComplaintForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">เรื่องร้องเรียน</label>
-                    <input type="text" id="complaintSubject" placeholder="เช่น ท่อประปาแตก / ไฟถนนดับ" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">เรื่องร้องเรียน *</label>
+                    <input type="text" id="subject" placeholder="เช่น ท่อประปาแตก / ไฟถนนดับ" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">🏡 ชุมชน / หมู่บ้าน</label>
-                    <input type="text" id="community" placeholder="ระบุชื่อชุมชน หรือ หมู่ที่..." required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">🏘️ ชุมชน / หมู่บ้าน *</label>
+                    <input type="text" id="community" placeholder="ระบุชื่อชุมชน หรือ หมู่ที่..." required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">📍 ซอย / ถนน / จุดสังเกต</label>
-                    <input type="text" id="location" placeholder="เช่น ซอย 5 / หน้าวัด / ข้างโรงเรียน" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">📍 ซอย / ถนน / จุดสังเกต</label>
+                    <input type="text" id="location" placeholder="เช่น ซอย 5 / หน้าวัด / ข้างโรงเรียน" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
+
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">📂 ประเภทเรื่องร้องเรียน</label>
-                    <select id="category" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">📁 ประเภทเรื่องร้องเรียน *</label>
+                    <select id="category" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน (ถนน/ไฟฟ้า/ประปา)</option>
-                        <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ/น้ำเสีย</option>
-                        <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ/เสียงดัง</option>
-                        <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร/ติดต่อสอบถาม</option>
+                        <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
+                        <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
+                        <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
                         <option value="อื่นๆ">อื่นๆ</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
-                    <select id="caseColor" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">ระดับความด่วน (สีเคส) *</label>
+                    <select id="color" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน (สีดำ)</option>
-                        <option value="red">🔴 เป็นอันตรายต่อประชาชน (สีแดง)</option>
-                        <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน (สีเหลือง)</option>
-                        <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน (สีเขียว)</option>
+                        <option value="red">🔴 อันตราย / ส่งผลกระทบวงกว้าง (สีแดง)</option>
+                        <option value="yellow">🟡 ร้องเรียนทั่วไป (สีเหลือง)</option>
+                        <option value="green">🟢 เสนอแนะ / ชมเชย (สีเขียว)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ กอง/สำนัก ที่รับผิดชอบ</label>
-                    <select id="assignedDepartment" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">🏛️ กอง/สำนัก ที่รับผิดชอบ *</label>
+                    <select id="department" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="สำนักปลัด">สำนักปลัด</option>
                         <option value="สำนักเลขานุการเทศบาล">สำนักเลขานุการเทศบาล</option>
                         <option value="สำนักการศึกษา">สำนักการศึกษา</option>
@@ -192,63 +126,42 @@
                         <option value="กองการแพทย์">กองการแพทย์</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">👤 เจ้าหน้าที่ผู้รับผิดชอบ</label>
-                    <input type="text" id="assignedOfficer" placeholder="ชื่อ-สกุล เจ้าหน้าที่ผู้รับเคส" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">👤 เจ้าหน้าที่ผู้รับผิดชอบ</label>
+                    <input type="text" id="officer" placeholder="ชื่อ-สกุล เจ้าหน้าที่ผู้รับเคส" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">ขั้นตอนดำเนินงาน</label>
-                    <select id="caseStep" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">ขั้นตอนดำเนินงาน *</label>
+                    <select id="step" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="รับเรื่อง">1. รับเรื่อง</option>
-                        <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง</option>
+                        <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายฯ</option>
                         <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
-                        <option value="ดำเนินการเสร็จสิ้น">4. ดำเนินการเสร็จสิ้น</option>
+                        <option value="ดำเนินการเสร็จสิ้น">4. เสร็จสิ้น</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
-                    <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
+                    <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div class="md:col-span-2 lg:col-span-3 flex justify-end mt-2">
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2 rounded-xl text-sm transition shadow">
+
+                <!-- เพิ่มช่อง URL รูปภาพสถานที่เกิดเหตุ -->
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">📷 ลิงก์รูปภาพประกอบ (Image URL)</label>
+                    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg (หากไม่มีวางไว้ว่างๆ ได้)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+
+                <div class="md:col-span-3 text-right mt-2">
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold transition shadow">
                         บันทึกรายการ
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <input type="text" id="searchInput" placeholder="🔍 ค้นหาเรื่อง / ชุมชน / ซอย..." class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                <select id="filterCategory" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="all">ทุกประเภทเรื่อง</option>
-                    <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
-                    <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
-                    <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
-                    <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
-                    <option value="อื่นๆ">อื่นๆ</option>
-                </select>
-                <select id="filterColor" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="all">ทุกระดับความด่วน (สี)</option>
-                    <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน</option>
-                    <option value="red">🔴 เป็นอันตรายต่อประชาชน</option>
-                    <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน</option>
-                    <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน</option>
-                </select>
-                <select id="filterStep" class="px-3 py-2 rounded-lg border border-slate-300 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="all">ทุกขั้นตอนดำเนินงาน</option>
-                    <option value="รับเรื่อง">1. รับเรื่อง</option>
-                    <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายฯ</option>
-                    <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
-                    <option value="ดำเนินการเสร็จสิ้น">4. เสร็จสิ้น</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- รายการคำร้องทั้งหมด -->
+        <!-- 3. Table Display -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>📋</span> รายการคำร้องเรียนทั้งหมด
             </h3>
             <div class="overflow-x-auto">
@@ -258,14 +171,14 @@
                             <th class="p-3 rounded-l-lg">วันที่/เวลา</th>
                             <th class="p-3">ระดับความด่วน</th>
                             <th class="p-3">เรื่อง / ประเภท</th>
-                            <th class="p-3">🏡 สถานที่ (ชุมชน/ซอย)</th>
-                            <th class="p-3">🏛️ กอง/สำนัก / เจ้าหน้าที่</th>
+                            <th class="p-3">สถานที่ (ชุมชน/ซอย)</th>
+                            <th class="p-3">กอง/สำนัก / เจ้าหน้าที่</th>
                             <th class="p-3">ขั้นตอนปัจจุบัน</th>
-                            <th class="p-3">⚠️ ปัญหา/อุปสรรค</th>
+                            <th class="p-3">ปัญหา/อุปสรรค</th>
                             <th class="p-3 text-center rounded-r-lg">จัดการ</th>
                         </tr>
                     </thead>
-                    <tbody id="complaintTableBody" class="divide-y divide-slate-100">
+                    <tbody id="adminTableBody" class="divide-y divide-slate-100">
                         <tr>
                             <td colspan="8" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td>
                         </tr>
@@ -276,165 +189,7 @@
 
     </div>
 
-    <!-- 3. Modal ป๊อบอัพสำหรับแก้ไขข้อมูล (Edit Modal) -->
-    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 border border-slate-100 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
-                <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <span>✏️</span> แก้ไขรายการคำร้องเรียน
-                </h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-            </div>
-            
-            <form id="editComplaintForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="hidden" id="editDocId">
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-medium text-slate-600 mb-1">เรื่องร้องเรียน</label>
-                    <input type="text" id="editSubject" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">🏡 ชุมชน / หมู่บ้าน</label>
-                    <input type="text" id="editCommunity" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">📍 ซอย / ถนน / จุดสังเกต</label>
-                    <input type="text" id="editLocation" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">📂 ประเภทเรื่องร้องเรียน</label>
-                    <select id="editCategory" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="🛠️ โครงสร้างพื้นฐาน">🛠️ โครงสร้างพื้นฐาน</option>
-                        <option value="🧹 สิ่งแวดล้อม/ขยะ">🧹 สิ่งแวดล้อม/ขยะ</option>
-                        <option value="🔊 เหตุเดือดร้อนรำคาญ">🔊 เหตุเดือดร้อนรำคาญ</option>
-                        <option value="📄 งานบริการ/งานเอกสาร">📄 งานบริการ/งานเอกสาร</option>
-                        <option value="อื่นๆ">อื่นๆ</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">ระดับความด่วน (สีเคส)</label>
-                    <select id="editColor" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน</option>
-                        <option value="red">🔴 เป็นอันตรายต่อประชาชน</option>
-                        <option value="yellow">🟡 กระทบต่อการใช้ชีวิตประชาชน</option>
-                        <option value="green">🟢 ทำให้แล้วเสร็จไม่เกิน 7 วัน</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">🏛️ กอง/สำนัก ที่รับผิดชอบ</label>
-                    <select id="editDepartment" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="สำนักปลัด">สำนักปลัด</option>
-                        <option value="สำนักเลขานุการเทศบาล">สำนักเลขานุการเทศบาล</option>
-                        <option value="สำนักการศึกษา">สำนักการศึกษา</option>
-                        <option value="กองสาธารณสุข">กองสาธารณสุข</option>
-                        <option value="กองคลัง">กองคลัง</option>
-                        <option value="กองช่าง">กองช่าง</option>
-                        <option value="กองการเจ้าหน้าที่">กองการเจ้าหน้าที่</option>
-                        <option value="กองสวัสดิการ">กองสวัสดิการ</option>
-                        <option value="กองยุทธศาสตร์และงบประมาณ">กองยุทธศาสตร์และงบประมาณ</option>
-                        <option value="กองการแพทย์">กองการแพทย์</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">👤 เจ้าหน้าที่ผู้รับผิดชอบ</label>
-                    <input type="text" id="editOfficer" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">ขั้นตอนดำเนินงาน</label>
-                    <select id="editStep" required class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                        <option value="รับเรื่อง">1. รับเรื่อง</option>
-                        <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง">2. ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง</option>
-                        <option value="กำลังดำเนินการ">3. กำลังดำเนินการ</option>
-                        <option value="ดำเนินการเสร็จสิ้น">4. ดำเนินการเสร็จสิ้น</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-600 mb-1">⚠️ ปัญหา / อุปสรรค (ถ้ามี)</label>
-                    <input type="text" id="editObstacle" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
-                </div>
-                <div class="md:col-span-2 flex justify-end gap-2 mt-4 pt-3 border-t border-slate-100">
-                    <button type="button" id="cancelModalBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-xl text-xs font-medium transition">ยกเลิก</button>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-xl text-xs font-medium transition shadow">บันทึกการแก้ไข</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- 4. ส่วนพิมพ์ใบรายงาน A4 สำหรับนำเรียนผู้บริหาร (จะซ่อนอยู่ เปิดเฉพาะตอนสั่งพิมพ์) -->
-    <div id="printArea" class="a4-container" style="display: none;">
-        <div>
-            <div style="text-align: center; margin-bottom: 12px;">
-                <h2 style="font-size: 20pt; font-weight: bold; margin: 0;">ใบสั่งการและติดตามเรื่องร้องเรียน / ร้องทุกข์</h2>
-                <p style="font-size: 14pt; color: #444; margin: 2px 0 0 0;">ระบบรับเรื่องร้องเรียนเทศบาล/หน่วยงานท้องถิ่น</p>
-                <div style="border-bottom: 2px solid #000; margin-top: 8px;"></div>
-            </div>
-
-            <table class="a4-table">
-                <tr>
-                    <td class="label">วันที่รับเรื่อง:</td>
-                    <td id="printDate" style="width: 28%;">-</td>
-                    <td class="label" style="width: 20%;">ระดับความด่วน:</td>
-                    <td id="printUrgency" style="width: 30%;">-</td>
-                </tr>
-                <tr>
-                    <td class="label">เรื่องร้องเรียน:</td>
-                    <td colspan="3" id="printSubject" style="font-weight: bold;">-</td>
-                </tr>
-                <tr>
-                    <td class="label">ประเภทเรื่อง:</td>
-                    <td id="printCategory">-</td>
-                    <td class="label">ชุมชน/หมู่บ้าน:</td>
-                    <td id="printCommunity">-</td>
-                </tr>
-                <tr>
-                    <td class="label">สถานที่เกิดเหตุ:</td>
-                    <td colspan="3" id="printLocation">-</td>
-                </tr>
-                <tr>
-                    <td class="label">หน่วยงานรับผิดชอบ:</td>
-                    <td id="printDepartment">-</td>
-                    <td class="label">เจ้าหน้าที่ผู้รับเคส:</td>
-                    <td id="printOfficer">-</td>
-                </tr>
-                <tr>
-                    <td class="label">สถานะดำเนินงาน:</td>
-                    <td id="printStep">-</td>
-                    <td class="label">ปัญหา/อุปสรรค:</td>
-                    <td id="printObstacle">-</td>
-                </tr>
-            </table>
-
-            <!-- ส่วนแสดงรูปภาพประกอบสถานที่เกิดเหตุ -->
-            <div style="margin-top: 15px;">
-                <div style="font-weight: bold; font-size: 15pt; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-bottom: 8px;">
-                    📷 รูปภาพประกอบสถานที่เกิดเหตุ
-                </div>
-                <div style="text-align: center; height: 85mm; display: flex; align-items: center; justify-content: center; border: 1px dashed #aaa; border-radius: 6px; padding: 4px; background: #fafafa;">
-                    <img id="printImage" src="https://via.placeholder.com/600x350?text=ไม่มีรูปภาพประกอบ" alt="รูปภาพประกอบ" style="max-width: 100%; max-height: 82mm; object-fit: contain;">
-                </div>
-            </div>
-        </div>
-
-        <!-- ส่วนท้ายใบรายงาน (ลายเซ็นผู้รายงาน และ ข้อสั่งการผู้บริหาร) -->
-        <div style="margin-top: 10px; border-top: 1px solid #000; padding-top: 10px;">
-            <div style="font-weight: bold; margin-bottom: 8px; text-decoration: underline;">บันทึกข้อสั่งการของผู้บริหาร:</div>
-            <div style="border: 1px solid #999; height: 25mm; border-radius: 4px; padding: 6px; margin-bottom: 12px;"></div>
-            
-            <div style="display: flex; justify-content: space-between; text-align: center; font-size: 14pt;">
-                <div style="width: 45%;">
-                    <p style="margin: 2px 0;">ลงชื่อ..........................................................ผู้รายงาน</p>
-                    <p style="margin: 2px 0;">(..........................................................)</p>
-                    <p style="margin: 2px 0;">ตำแหน่ง..........................................................</p>
-                </div>
-                <div style="width: 45%;">
-                    <p style="margin: 2px 0;">ลงชื่อ..........................................................ผู้สั่งการ</p>
-                    <p style="margin: 2px 0;">(..........................................................)</p>
-                    <p style="margin: 2px 0;">ตำแหน่ง..........................................................</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase Script (Module) -->
+    <!-- Firebase Logic -->
     <script type="module">
         import { 
             auth, 
@@ -452,330 +207,182 @@
             orderBy 
         } from "./app.js";
 
-        let allComplaintsData = [];
-
-        // DOM Elements
         const loginSection = document.getElementById('loginSection');
-        const adminSection = document.getElementById('adminSection');
-        const userInfo = document.getElementById('userInfo');
-        const userEmail = document.getElementById('userEmail');
+        const dashboardSection = document.getElementById('dashboardSection');
         const loginForm = document.getElementById('loginForm');
-        const loginError = document.getElementById('loginError');
         const logoutBtn = document.getElementById('logoutBtn');
+        const userEmail = document.getElementById('userEmail');
         const addComplaintForm = document.getElementById('addComplaintForm');
-        const complaintTableBody = document.getElementById('complaintTableBody');
+        const adminTableBody = document.getElementById('adminTableBody');
 
-        // Modal Elements
-        const editModal = document.getElementById('editModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const cancelModalBtn = document.getElementById('cancelModalBtn');
-        const editComplaintForm = document.getElementById('editComplaintForm');
+        let complaintsData = [];
 
-        // Search & Filters
-        const searchInput = document.getElementById('searchInput');
-        const filterCategory = document.getElementById('filterCategory');
-        const filterColor = document.getElementById('filterColor');
-        const filterStep = document.getElementById('filterStep');
-
-        // 1. ตรวจสอบสถานะการล็อกอิน
+        // Auth Listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginSection.classList.add('hidden');
-                adminSection.classList.remove('hidden');
-                userInfo.classList.remove('hidden');
+                dashboardSection.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
                 userEmail.textContent = user.email;
-                loadComplaints();
+                loadAdminData();
             } else {
                 loginSection.classList.remove('hidden');
-                adminSection.classList.add('hidden');
-                userInfo.classList.add('hidden');
+                dashboardSection.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                userEmail.textContent = '';
             }
         });
 
-        // 2. ฟังก์ชั่นเข้าสู่ระบบ
+        // Login Event
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            loginError.classList.add('hidden');
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                loginForm.reset();
-            } catch (error) {
-                loginError.textContent = "อีเมลหรือรหัสผ่านไม่ถูกต้อง (" + error.message + ")";
-                loginError.classList.remove('hidden');
+            } catch (err) {
+                alert('เข้าสู่ระบบไม่สำเร็จ: ' + err.message);
             }
         });
 
-        // 3. ฟังก์ชั่นออกจากระบบ
+        // Logout Event
         logoutBtn.addEventListener('click', () => signOut(auth));
 
-        // 4. ฟังก์ชั่นเพิ่มคำร้องเรียนใหม่
-        addComplaintForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                await addDoc(collection(db, "complaints"), {
-                    subject: document.getElementById('complaintSubject').value,
-                    community: document.getElementById('community').value,
-                    location: document.getElementById('location').value || "-",
-                    category: document.getElementById('category').value,
-                    color: document.getElementById('caseColor').value,
-                    department: document.getElementById('assignedDepartment').value,
-                    officer: document.getElementById('assignedOfficer').value || "ยังไม่ได้ระบุ",
-                    step: document.getElementById('caseStep').value,
-                    obstacle: document.getElementById('obstacle').value || "-",
-                    createdAt: new Date().toISOString()
-                });
-                addComplaintForm.reset();
-                loadComplaints();
-                alert("บันทึกข้อมูลเรียบร้อยแล้ว!");
-            } catch (error) {
-                alert("เกิดข้อผิดพลาดในการบันทึก: " + error.message);
-            }
-        });
-
-        // 5. ดึงรายการคำร้องมาแสดงผล
-        async function loadComplaints() {
-            complaintTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">กำลังโหลดข้อมูล...</td></tr>';
+        // Load Data
+        async function loadAdminData() {
             try {
                 const q = query(collection(db, "complaints"), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                allComplaintsData = [];
-                querySnapshot.forEach((docSnap) => {
-                    allComplaintsData.push({ id: docSnap.id, ...docSnap.data() });
-                });
+                const snap = await getDocs(q);
+                complaintsData = [];
+                snap.forEach(d => complaintsData.push({ id: d.id, ...d.data() }));
 
-                calculateKPIs(allComplaintsData);
-                renderTable(allComplaintsData);
-            } catch (error) {
-                complaintTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500">โหลดข้อมูลไม่สำเร็จ: ${error.message}</td></tr>`;
+                renderStats(complaintsData);
+                renderAdminTable(complaintsData);
+            } catch (err) {
+                console.error("Error loading admin data:", err);
             }
         }
 
-        // 6. คำนวณ KPI สถิติ
-        function calculateKPIs(data) {
-            document.getElementById('statTotal').textContent = data.length;
-            const pending = data.filter(item => item.step !== 'ดำเนินการเสร็จสิ้น').length;
-            const completed = data.filter(item => item.step === 'ดำเนินการเสร็จสิ้น').length;
+        // Render Stats
+        function renderStats(data) {
+            document.getElementById('adminStatTotal').textContent = data.length;
+            const pending = data.filter(i => i.step !== 'ดำเนินการเสร็จสิ้น').length;
+            const completed = data.filter(i => i.step === 'ดำเนินการเสร็จสิ้น').length;
             
             const now = new Date();
-            const overdue = data.filter(item => {
-                if(item.step === 'ดำเนินการเสร็จสิ้น') return false;
-                const created = new Date(item.createdAt);
-                const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24));
-                return diffDays > 7;
+            const overdue = data.filter(i => {
+                if (i.step === 'ดำเนินการเสร็จสิ้น') return false;
+                const created = new Date(i.createdAt);
+                return Math.floor((now - created) / (1000 * 60 * 60 * 24)) > 7;
             }).length;
 
-            document.getElementById('statPending').textContent = pending;
-            document.getElementById('statCompleted').textContent = completed;
-            document.getElementById('statOverdue').textContent = overdue;
+            document.getElementById('adminStatPending').textContent = pending;
+            document.getElementById('adminStatCompleted').textContent = completed;
+            document.getElementById('adminStatOverdue').textContent = overdue;
         }
 
-        // 7. แสดงผลลงในตารางตามการกรอง
-        function renderTable(data) {
-            const searchText = searchInput.value.toLowerCase();
-            const selectedCategory = filterCategory.value;
-            const selectedColor = filterColor.value;
-            const selectedStep = filterStep.value;
-
-            const filteredData = data.filter(item => {
-                const subjectMatch = (item.subject || '').toLowerCase().includes(searchText);
-                const commMatch = (item.community || '').toLowerCase().includes(searchText);
-                const locMatch = (item.location || '').toLowerCase().includes(searchText);
-                
-                const matchSearch = subjectMatch || commMatch || locMatch;
-                const matchCat = selectedCategory === 'all' || item.category === selectedCategory;
-                const matchColor = selectedColor === 'all' || item.color === selectedColor;
-                const matchStep = selectedStep === 'all' || item.step === selectedStep;
-                return matchSearch && matchCat && matchColor && matchStep;
-            });
-
-            if (filteredData.length === 0) {
-                complaintTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">ไม่พบข้อมูลที่ตรงตามเงื่อนไข</td></tr>';
+        // Render Table
+        function renderAdminTable(data) {
+            if (data.length === 0) {
+                adminTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">ยังไม่มีรายการข้อมูล</td></tr>';
                 return;
             }
 
             let html = '';
-            filteredData.forEach((data) => {
-                const date = new Date(data.createdAt).toLocaleDateString('th-TH', {
+            data.forEach(item => {
+                const date = new Date(item.createdAt).toLocaleDateString('th-TH', {
                     day: 'numeric', month: 'short', year: '2-digit', hour: '2-digit', minute: '2-digit'
                 });
 
                 let colorBadge = '';
-                if(data.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2.5 py-1 rounded-full font-medium" title="นำเรียนผู้บริหารอย่างเร่งด่วน">⚫ นำเรียนผู้บริหาร</span>';
-                else if(data.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2.5 py-1 rounded-full font-medium" title="เป็นอันตรายต่อประชาชน">🔴 อันตราย</span>';
-                else if(data.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2.5 py-1 rounded-full font-medium" title="กระทบต่อการใช้ชีวิตประชาชน">🟡 กระทบการใช้ชีวิต</span>';
-                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2.5 py-1 rounded-full font-medium" title="ทำให้แล้วเสร็จไม่เกิน 7 วัน">🟢 แล้วเสร็จใน 7 วัน</span>';
+                if(item.color === 'black') colorBadge = '<span class="bg-black text-white text-xs px-2 py-0.5 rounded-full">⚫ ดำ</span>';
+                else if(item.color === 'red') colorBadge = '<span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">🔴 แดง</span>';
+                else if(item.color === 'yellow') colorBadge = '<span class="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full">🟡 เหลือง</span>';
+                else colorBadge = '<span class="bg-emerald-500 text-white text-xs px-2 py-0.5 rounded-full">🟢 เขียว</span>';
 
                 html += `
                     <tr class="hover:bg-slate-50">
                         <td class="p-3 text-xs whitespace-nowrap text-slate-400">${date}</td>
                         <td class="p-3 whitespace-nowrap">${colorBadge}</td>
                         <td class="p-3">
-                            <div class="font-medium text-slate-800">${data.subject}</div>
-                            <div class="text-xs text-indigo-500 font-normal">${data.category || 'ไม่ระบุ'}</div>
+                            <div class="font-medium text-slate-800">${item.subject}</div>
+                            <div class="text-xs text-indigo-500">${item.category || 'ไม่ระบุ'}</div>
                         </td>
                         <td class="p-3">
-                            <div class="font-medium text-slate-700">🏡 ${data.community || 'ไม่ระบุ'}</div>
-                            <div class="text-xs text-slate-400">📍 ${data.location || '-'}</div>
+                            <div class="font-medium text-slate-700">🏡 ${item.community || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-400">📍 ${item.location || '-'}</div>
                         </td>
                         <td class="p-3">
-                            <div class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded w-max mb-1">${data.department || 'ไม่ระบุ'}</div>
-                            <div class="text-xs text-slate-500">👤 ${data.officer || 'ไม่ระบุ'}</div>
+                            <div class="text-xs font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded w-max mb-1">${item.department || 'ไม่ระบุ'}</div>
+                            <div class="text-xs text-slate-500">👤 ${item.officer || 'ยังไม่ระบุ'}</div>
                         </td>
-                        <td class="p-3">
-                            <select onchange="window.updateStep('${data.id}', this.value)" class="text-xs bg-slate-50 border border-slate-200 rounded-lg p-1.5 focus:ring-1 focus:ring-indigo-500 outline-none">
-                                <option value="รับเรื่อง" ${data.step === 'รับเรื่อง' ? 'selected' : ''}>1. รับเรื่อง</option>
-                                <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง" ${data.step === 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง' ? 'selected' : ''}>2. ส่งเรื่องให้ฝ่ายฯ</option>
-                                <option value="กำลังดำเนินการ" ${data.step === 'กำลังดำเนินการ' ? 'selected' : ''}>3. กำลังดำเนินการ</option>
-                                <option value="ดำเนินการเสร็จสิ้น" ${data.step === 'ดำเนินการเสร็จสิ้น' ? 'selected' : ''}>4. เสร็จสิ้น</option>
+                        <td class="p-3 whitespace-nowrap">
+                            <select onchange="window.updateStep('${item.id}', this.value)" class="text-xs border rounded px-2 py-1 bg-white outline-none">
+                                <option value="รับเรื่อง" ${item.step === 'รับเรื่อง' ? 'selected' : ''}>1. รับเรื่อง</option>
+                                <option value="ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง" ${item.step === 'ส่งเรื่องให้ฝ่ายที่เกี่ยวข้อง' ? 'selected' : ''}>2. ส่งเรื่องให้ฝ่ายฯ</option>
+                                <option value="กำลังดำเนินการ" ${item.step === 'กำลังดำเนินการ' ? 'selected' : ''}>3. กำลังดำเนินการ</option>
+                                <option value="ดำเนินการเสร็จสิ้น" ${item.step === 'ดำเนินการเสร็จสิ้น' ? 'selected' : ''}>4. เสร็จสิ้น</option>
                             </select>
                         </td>
                         <td class="p-3 text-xs text-rose-500">
-                            ${data.obstacle && data.obstacle !== '-' ? `⚠️ ${data.obstacle}` : '<span class="text-slate-300">-</span>'}
+                            ${item.obstacle && item.obstacle !== '-' ? `⚠️ ${item.obstacle}` : '<span class="text-slate-300">-</span>'}
                         </td>
-                        <td class="p-3 text-center whitespace-nowrap">
-                            <div class="flex items-center justify-center gap-1">
-                                <button onclick="window.printReport('${data.id}')" class="text-blue-600 hover:text-blue-800 text-xs font-medium bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition" title="พิมพ์ใบรายงาน A4">
-                                    🖨️ พิมพ์
-                                </button>
-                                <button onclick="window.openEditModal('${data.id}')" class="text-amber-600 hover:text-amber-800 text-xs font-medium bg-amber-50 hover:bg-amber-100 px-2.5 py-1 rounded-lg transition">
-                                    ✏️ แก้ไข
-                                </button>
-                                <button onclick="window.deleteComplaint('${data.id}')" class="text-rose-500 hover:text-rose-700 text-xs font-medium bg-rose-50 hover:bg-rose-100 px-2.5 py-1 rounded-lg transition">
-                                    🗑️ ลบ
-                                </button>
-                            </div>
+                        <td class="p-3 text-center whitespace-nowrap space-x-1">
+                            <button onclick="window.deleteComplaint('${item.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-medium bg-rose-50 px-2 py-1 rounded">🗑️ ลบ</button>
                         </td>
                     </tr>
                 `;
             });
-            complaintTableBody.innerHTML = html;
+            adminTableBody.innerHTML = html;
         }
 
-        // Event Listeners สำหรับการกรองข้อมูล
-        searchInput.addEventListener('input', () => renderTable(allComplaintsData));
-        filterCategory.addEventListener('change', () => renderTable(allComplaintsData));
-        filterColor.addEventListener('change', () => renderTable(allComplaintsData));
-        filterStep.addEventListener('change', () => renderTable(allComplaintsData));
-
-        // 8. ฟังก์ชั่นอัปเดตขั้นตอนดำเนินงานด่วน
-        window.updateStep = async (id, newStep) => {
-            try {
-                await updateDoc(doc(db, "complaints", id), { step: newStep });
-                loadComplaints();
-            } catch (error) {
-                alert("อัปเดตขั้นตอนไม่สำเร็จ: " + error.message);
-            }
-        };
-
-        // 9. ฟังก์ชั่นลบรายการ
-        window.deleteComplaint = async (id) => {
-            if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?")) {
-                try {
-                    await deleteDoc(doc(db, "complaints", id));
-                    loadComplaints();
-                } catch (error) {
-                    alert("ลบรายการไม่สำเร็จ: " + error.message);
-                }
-            }
-        };
-
-        // 10. ฟังก์ชั่นเปิด Modal แก้ไขข้อมูล
-        window.openEditModal = (id) => {
-            const item = allComplaintsData.find(c => c.id === id);
-            if (!item) return;
-
-            document.getElementById('editDocId').value = item.id;
-            document.getElementById('editSubject').value = item.subject || '';
-            document.getElementById('editCommunity').value = item.community || '';
-            document.getElementById('editLocation').value = item.location || '';
-            document.getElementById('editCategory').value = item.category || 'อื่นๆ';
-            document.getElementById('editColor').value = item.color || 'green';
-            document.getElementById('editDepartment').value = item.department || 'สำนักปลัด';
-            document.getElementById('editOfficer').value = item.officer || '';
-            document.getElementById('editStep').value = item.step || 'รับเรื่อง';
-            document.getElementById('editObstacle').value = item.obstacle || '';
-
-            editModal.classList.remove('hidden');
-        };
-
-        // ปิด Modal
-        const closeModal = () => editModal.classList.add('hidden');
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelModalBtn.addEventListener('click', closeModal);
-
-        // บันทึกการแก้ไข Modal
-        editComplaintForm.addEventListener('submit', async (e) => {
+        // Add Complaint Event
+        addComplaintForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const id = document.getElementById('editDocId').value;
+            const newDoc = {
+                subject: document.getElementById('subject').value,
+                community: document.getElementById('community').value,
+                location: document.getElementById('location').value,
+                category: document.getElementById('category').value,
+                color: document.getElementById('color').value,
+                department: document.getElementById('department').value,
+                officer: document.getElementById('officer').value,
+                step: document.getElementById('step').value,
+                obstacle: document.getElementById('obstacle').value || '-',
+                imageUrl: document.getElementById('imageUrl').value || '',
+                createdAt: new Date().toISOString()
+            };
 
             try {
-                await updateDoc(doc(db, "complaints", id), {
-                    subject: document.getElementById('editSubject').value,
-                    community: document.getElementById('editCommunity').value,
-                    location: document.getElementById('editLocation').value || "-",
-                    category: document.getElementById('editCategory').value,
-                    color: document.getElementById('editColor').value,
-                    department: document.getElementById('editDepartment').value,
-                    officer: document.getElementById('editOfficer').value || "ยังไม่ได้ระบุ",
-                    step: document.getElementById('editStep').value,
-                    obstacle: document.getElementById('editObstacle').value || "-"
-                });
-                closeModal();
-                loadComplaints();
-                alert("บันทึกการแก้ไขเรียบร้อยแล้ว!");
-            } catch (error) {
-                alert("เกิดข้อผิดพลาดในการแก้ไข: " + error.message);
+                await addDoc(collection(db, "complaints"), newDoc);
+                addComplaintForm.reset();
+                loadAdminData();
+            } catch (err) {
+                alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
             }
         });
 
-        // 11. ฟังก์ชั่นสำหรับเตรียมข้อมูลและกดสั่งพิมพ์เอกสาร A4
-        window.printReport = (id) => {
-            const item = allComplaintsData.find(c => c.id === id);
-            if (!item) return;
-
-            // แปลงวันที่
-            const dateStr = new Date(item.createdAt).toLocaleDateString('th-TH', {
-                day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
-
-            // แปลงสีเป็นข้อความ
-            let urgencyText = '🟢 ทั่วไป (ภายใน 7 วัน)';
-            if (item.color === 'black') urgencyText = '⚫ นำเรียนผู้บริหารเร่งด่วน';
-            else if (item.color === 'red') urgencyText = '🔴 อันตรายต่อประชาชน';
-            else if (item.color === 'yellow') urgencyText = '🟡 กระทบการใช้ชีวิต';
-
-            // นำข้อมูลไปหยอดลงในแบบฟอร์ม A4
-            document.getElementById('printDate').innerText = dateStr;
-            document.getElementById('printUrgency').innerText = urgencyText;
-            document.getElementById('printSubject').innerText = item.subject || '-';
-            document.getElementById('printCategory').innerText = item.category || '-';
-            document.getElementById('printCommunity').innerText = item.community || '-';
-            document.getElementById('printLocation').innerText = item.location || '-';
-            document.getElementById('printDepartment').innerText = item.department || '-';
-            document.getElementById('printOfficer').innerText = item.officer || 'ยังไม่ได้ระบุ';
-            document.getElementById('printStep').innerText = item.step || '-';
-            document.getElementById('printObstacle').innerText = item.obstacle || '-';
-
-            // ใส่รูปภาพ (ถ้ามี)
-            const imgElem = document.getElementById('printImage');
-            if (item.imageUrl) {
-                imgElem.src = item.imageUrl;
-            } else {
-                imgElem.src = 'https://via.placeholder.com/600x350?text=ไม่มีรูปภาพประกอบ';
+        // Update Step Function
+        window.updateStep = async (id, newStep) => {
+            try {
+                const docRef = doc(db, "complaints", id);
+                await updateDoc(docRef, { step: newStep });
+                loadAdminData();
+            } catch (err) {
+                alert('อัปเดตไม่สำเร็จ: ' + err.message);
             }
+        };
 
-            // แสดงส่วนพิมพ์ชั่วคราวและสั่งพิมพ์ทันที
-            const printArea = document.getElementById('printArea');
-            printArea.style.display = 'flex';
-            
-            setTimeout(() => {
-                window.print();
-                printArea.style.display = 'none'; // ซ่อนกลับเมื่อพิมพ์เสร็จ
-            }, 300);
+        // Delete Function
+        window.deleteComplaint = async (id) => {
+            if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
+                try {
+                    await deleteDoc(doc(db, "complaints", id));
+                    loadAdminData();
+                } catch (err) {
+                    alert('ลบไม่สำเร็จ: ' + err.message);
+                }
+            }
         };
     </script>
 </body>
