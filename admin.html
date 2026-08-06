@@ -16,27 +16,26 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 20mm 15mm 20mm 20mm; /* ระยะขอบตามมาตรฐานหนังสือราชการ */
+                margin: 20mm 15mm 20mm 20mm; /* ระยะขอบมาตรฐานราชการ */
             }
             body {
                 background: white !important;
                 color: black !important;
                 font-family: 'TH Sarabun PSK', sans-serif !important;
                 font-size: 16pt !important;
-                line-height: 1.25 !important;
+                line-height: 1.3 !important;
             }
             /* ซ่อนส่วนที่ไม่ต้องการพิมพ์ */
             nav, #loginSection, #kpiSection, #formSection, #searchSection, #actionButtons, .no-print {
                 display: none !important;
             }
             /* แสดงเฉพาะรายงานแบบพิมพ์ */
-            #printSection {
-                display: block !important;
+            #printSection, #singlePrintSection {
                 width: 100% !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            /* ตารางรายงานราชการ */
+            /* ตารางรายงานราชการรวม */
             .gov-table {
                 width: 100%;
                 border-collapse: collapse;
@@ -151,9 +150,9 @@
                     <label class="block text-xs font-semibold text-slate-600 mb-1">ระดับความด่วน (สีเคส) *</label>
                     <select id="color" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                         <option value="black">⚫ นำเรียนผู้บริหารอย่างเร่งด่วน (สีดำ)</option>
-                        <option value="red">🔴 อันตราย / ส่งผลกระทบวงกว้าง (สีแดง)</option>
-                        <option value="yellow">🟡 ร้องเรียนทั่วไป (สีเหลือง)</option>
-                        <option value="green">🟢 เสนอแนะ / ชมเชย (สีเขียว)</option>
+                        <option value="red">🔴 เป็นอันตรายต่อประชาชน (สีแดง)</option>
+                        <option value="yellow">🟡 ส่งผลกระทบต่อการใช้ชีวิต (สีเหลือง)</option>
+                        <option value="green">🟢 แก้ไขภายใน 3-5 วัน (สีเขียว)</option>
                     </select>
                 </div>
                 <div>
@@ -212,7 +211,7 @@
                     <span>📋</span> รายการคำร้องเรียนทั้งหมด
                 </h3>
                 <button onclick="window.printReport()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1 shadow">
-                    🖨️ พิมพ์รายงาน A4 (แบบราชการ)
+                    🖨️ พิมพ์รายงานตารางรวม A4
                 </button>
             </div>
             <div class="overflow-x-auto">
@@ -238,7 +237,7 @@
             </div>
         </div>
 
-        <!-- 4. Section รายงานสำหรับพิมพ์ A4 ราชการ (แสดงเฉพาะเวลาพิมพ์) -->
+        <!-- 4. Section รายงานสำหรับพิมพ์ ตารางรวม A4 ราชการ -->
         <div id="printSection" class="hidden">
             <div style="text-align: center; margin-bottom: 20px;">
                 <h2 style="font-size: 22pt; font-weight: bold; margin: 0;">รายงานสรุปติดตามเรื่องร้องเรียน / ร้องทุกข์</h2>
@@ -258,7 +257,7 @@
                     </tr>
                 </thead>
                 <tbody id="printTableBody">
-                    <!-- ข้อมูลพิมพ์ถูกสร้างสร้างผ่าน JS -->
+                    <!-- ข้อมูลพิมพ์ถูกสร้างผ่าน JS -->
                 </tbody>
             </table>
 
@@ -266,6 +265,69 @@
                 <div style="width: 250px;">
                     <p style="margin-bottom: 50px;">ลงชื่อ..........................................................<br>(..........................................................)</p>
                     <p>ตำแหน่ง....................................................</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Section รายงานสำหรับพิมพ์ "รายเคสเดี่ยว" A4 ราชการ -->
+        <div id="singlePrintSection" class="hidden">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="font-size: 22pt; font-weight: bold; margin: 0;">บันทึกรายงานเรื่องร้องเรียน / ร้องทุกข์</h2>
+                <p style="font-size: 16pt; margin-top: 5px;" id="singlePrintDocNo">เอกสารติดตามงานร้องเรียน</p>
+            </div>
+
+            <table style="w-full; border-collapse: collapse; width: 100%; font-size: 16pt; line-height: 1.8;">
+                <tr>
+                    <td style="width: 25%; font-weight: bold; vertical-align: top;">วันที่รับเรื่อง :</td>
+                    <td style="width: 75%;" id="singleDate">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">เรื่องร้องเรียน :</td>
+                    <td id="singleSubject" style="font-weight: bold;">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">ประเภทเรื่อง :</td>
+                    <td id="singleCategory">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">ระดับความด่วน :</td>
+                    <td id="singlePriority">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">สถานที่เกิดเหตุ :</td>
+                    <td id="singleLocation">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">หน่วยงานรับผิดชอบ :</td>
+                    <td id="singleDept">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">เจ้าหน้าที่ผู้รับเคส :</td>
+                    <td id="singleOfficer">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">สถานะการดำเนินงาน :</td>
+                    <td id="singleStep">-</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; vertical-align: top;">ปัญหา / อุปสรรค :</td>
+                    <td id="singleObstacle">-</td>
+                </tr>
+            </table>
+
+            <div id="singleImageContainer" style="margin-top: 20px; text-align: center; display: none;">
+                <p style="font-weight: bold; text-align: left; margin-bottom: 8px;">ภาพถ่ายประกอบสถานที่เกิดเหตุ :</p>
+                <img id="singlePrintImage" src="" style="max-height: 280px; max-width: 100%; border: 1px solid #ccc; padding: 4px; display: inline-block;">
+            </div>
+
+            <div style="margin-top: 50px; display: flex; justify-content: space-between; text-align: center;">
+                <div style="width: 220px;">
+                    <p style="margin-bottom: 50px;">ลงชื่อ..........................................................<br>(..........................................................)</p>
+                    <p>ผู้รายงาน / เจ้าหน้าที่รับเคส</p>
+                </div>
+                <div style="width: 220px;">
+                    <p style="margin-bottom: 50px;">ลงชื่อ..........................................................<br>(..........................................................)</p>
+                    <p>ผู้พิจารณา / หัวหน้าหน่วยงาน</p>
                 </div>
             </div>
         </div>
@@ -412,6 +474,7 @@
                             ${item.obstacle && item.obstacle !== '-' ? `⚠️ ${item.obstacle}` : '<span class="text-slate-300">-</span>'}
                         </td>
                         <td class="p-3 text-center whitespace-nowrap space-x-1">
+                            <button onclick="window.printSingleCase('${item.id}')" class="text-indigo-600 hover:text-indigo-800 text-xs font-medium bg-indigo-50 px-2 py-1 rounded">🖨️ พิมพ์</button>
                             <button onclick="window.deleteComplaint('${item.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-medium bg-rose-50 px-2 py-1 rounded">🗑️ ลบ</button>
                         </td>
                     </tr>
@@ -420,7 +483,7 @@
             adminTableBody.innerHTML = html;
         }
 
-        // Helper: Convert File to Base64 String (พร้อมย่อขนาดรูปภาพ)
+        // Helper: Convert File to Base64 String
         function convertFileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -429,7 +492,7 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; // กำหนดขนาดรูปสูงสุดเพื่อไม่ให้เปลืองพื้นที่
+                        const MAX_WIDTH = 800;
                         let width = img.width;
                         let height = img.height;
 
@@ -442,7 +505,7 @@
                         canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // บีบอัดคุณภาพ 70%
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
                 };
                 reader.onerror = error => reject(error);
@@ -476,7 +539,7 @@
             try {
                 await addDoc(collection(db, "complaints"), newDoc);
                 addComplaintForm.reset();
-                imageFileInput.value = ''; // เคลียร์ช่องเลือกไฟล์
+                imageFileInput.value = '';
                 loadAdminData();
             } catch (err) {
                 alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
@@ -506,8 +569,11 @@
             }
         };
 
-        // Print Function แบบราชการ A4
+        // Print Report (รวม)
         window.printReport = () => {
+            document.getElementById('printSection').classList.remove('hidden');
+            document.getElementById('singlePrintSection').classList.add('hidden');
+
             const printTableBody = document.getElementById('printTableBody');
             const printDateRange = document.getElementById('printDateRange');
             
@@ -539,6 +605,45 @@
             });
 
             printTableBody.innerHTML = html;
+            window.print();
+        };
+
+        // Print Single Case (พิมพ์แยกรายเคส)
+        window.printSingleCase = (id) => {
+            const item = complaintsData.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('printSection').classList.add('hidden');
+            document.getElementById('singlePrintSection').classList.remove('hidden');
+
+            const dateFormatted = new Date(item.createdAt).toLocaleDateString('th-TH', {
+                day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }) + ' น.';
+
+            let priorityText = '🟢 แก้ไขภายใน 3-5 วัน (สีเขียว)';
+            if(item.color === 'black') priorityText = '⚫ นำเรียนผู้บริหารอย่างเร่งด่วน (สีดำ)';
+            if(item.color === 'red') priorityText = '🔴 เป็นอันตรายต่อประชาชน (สีแดง)';
+            if(item.color === 'yellow') priorityText = '🟡 ส่งผลกระทบต่อการใช้ชีวิต (สีเหลือง)';
+
+            document.getElementById('singleDate').textContent = dateFormatted;
+            document.getElementById('singleSubject').textContent = item.subject || '-';
+            document.getElementById('singleCategory').textContent = item.category || '-';
+            document.getElementById('singlePriority').textContent = priorityText;
+            document.getElementById('singleLocation').textContent = `${item.community || '-'} (${item.location || '-'})`;
+            document.getElementById('singleDept').textContent = item.department || '-';
+            document.getElementById('singleOfficer').textContent = item.officer || 'ยังไม่ระบุ';
+            document.getElementById('singleStep').textContent = item.step || 'รับเรื่อง';
+            document.getElementById('singleObstacle').textContent = (item.obstacle && item.obstacle !== '-') ? item.obstacle : 'ไม่มี';
+
+            const singleImageContainer = document.getElementById('singleImageContainer');
+            const singlePrintImage = document.getElementById('singlePrintImage');
+            if (item.imageUrl) {
+                singlePrintImage.src = item.imageUrl;
+                singleImageContainer.style.display = 'block';
+            } else {
+                singleImageContainer.style.display = 'none';
+            }
+
             window.print();
         };
     </script>
