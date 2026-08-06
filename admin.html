@@ -6,10 +6,55 @@
     <title>ระบบจัดการหลังบ้าน - เรื่องร้องเรียน</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Prompt) -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Prompt สำหรับหน้าเว็บ & TH Sarabun PSK สำหรับหน้าพิมพ์ -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=TH+Sarabun+PSK:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         body { font-family: 'Prompt', sans-serif; }
+
+        /* Style เฉพาะสำหรับการพิมพ์ A4 ราชการ */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 20mm 15mm 20mm 20mm; /* ระยะขอบตามมาตรฐานหนังสือราชการ */
+            }
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: 'TH Sarabun PSK', sans-serif !important;
+                font-size: 16pt !important;
+                line-height: 1.25 !important;
+            }
+            /* ซ่อนส่วนที่ไม่ต้องการพิมพ์ */
+            nav, #loginSection, #kpiSection, #formSection, #searchSection, #actionButtons, .no-print {
+                display: none !important;
+            }
+            /* แสดงเฉพาะรายงานแบบพิมพ์ */
+            #printSection {
+                display: block !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            /* ตารางรายงานราชการ */
+            .gov-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+                font-size: 16pt;
+            }
+            .gov-table th, .gov-table td {
+                border: 1px solid #000;
+                padding: 4px 6px;
+                vertical-align: top;
+            }
+            .gov-table th {
+                background-color: #f2f2f2 !important;
+                text-align: center;
+                font-weight: bold;
+                -webkit-print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen pb-12">
@@ -30,7 +75,7 @@
         </div>
     </nav>
 
-    <!-- Section 1: Login Form (แสดงเมื่อยังไม่เข้าสู่ระบบ) -->
+    <!-- Section 1: Login Form -->
     <div id="loginSection" class="max-w-md mx-auto px-4 py-12">
         <div class="bg-white p-8 rounded-2xl shadow-md border border-slate-200">
             <h2 class="text-xl font-bold text-slate-800 text-center mb-6">🔑 เข้าสู่ระบบเจ้าหน้าที่</h2>
@@ -50,11 +95,11 @@
         </div>
     </div>
 
-    <!-- Section 2: Dashboard Content (แสดงเมื่อเข้าสู่ระบบแล้ว) -->
+    <!-- Section 2: Dashboard Content -->
     <div id="dashboardSection" class="max-w-7xl mx-auto px-4 hidden">
 
         <!-- 1. KPI Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div id="kpiSection" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                 <p class="text-xs font-semibold text-slate-500">เรื่องทั้งหมด</p>
                 <h3 id="adminStatTotal" class="text-3xl font-bold text-slate-800 mt-1">0</h3>
@@ -74,7 +119,7 @@
         </div>
 
         <!-- 2. Form บันทึกเรื่องร้องเรียนใหม่ -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
+        <div id="formSection" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-8">
             <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>➕</span> บันทึกคำร้องเรียน / ร้องทุกข์ใหม่
             </h3>
@@ -145,10 +190,11 @@
                     <input type="text" id="obstacle" placeholder="เช่น รออะไหล่, งบประมาณไม่พอ" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
 
-                <!-- เพิ่มช่อง URL รูปภาพสถานที่เกิดเหตุ -->
+                <!-- ช่องเลือกอัปโหลดรูปภาพจากเครื่อง/มือถือ -->
                 <div class="md:col-span-3">
-                    <label class="block text-xs font-semibold text-slate-600 mb-1">📷 ลิงก์รูปภาพประกอบ (Image URL)</label>
-                    <input type="url" id="imageUrl" placeholder="https://example.com/image.jpg (หากไม่มีวางไว้ว่างๆ ได้)" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">📁 เลือกรูปภาพจากคอมพิวเตอร์/มือถือ (ถ้ามี)</label>
+                    <input type="file" id="imageFileInput" accept="image/*" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                    <p class="text-[11px] text-slate-400 mt-1">* รองรับไฟล์รูปภาพ JPG, PNG (ระบบจะย่อขนาดให้อัตโนมัติเพื่อความรวดเร็วในการบันทึก)</p>
                 </div>
 
                 <div class="md:col-span-3 text-right mt-2">
@@ -159,11 +205,16 @@
             </form>
         </div>
 
-        <!-- 3. Table Display -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 class="text-base font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <span>📋</span> รายการคำร้องเรียนทั้งหมด
-            </h3>
+        <!-- 3. Table Display สำหรับใช้งานบนหน้าเว็บ -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 no-print">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <span>📋</span> รายการคำร้องเรียนทั้งหมด
+                </h3>
+                <button onclick="window.printReport()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1 shadow">
+                    🖨️ พิมพ์รายงาน A4 (แบบราชการ)
+                </button>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-sm text-slate-600">
                     <thead class="bg-slate-100 text-slate-700 uppercase text-xs">
@@ -187,9 +238,41 @@
             </div>
         </div>
 
+        <!-- 4. Section รายงานสำหรับพิมพ์ A4 ราชการ (แสดงเฉพาะเวลาพิมพ์) -->
+        <div id="printSection" class="hidden">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h2 style="font-size: 22pt; font-weight: bold; margin: 0;">รายงานสรุปติดตามเรื่องร้องเรียน / ร้องทุกข์</h2>
+                <p style="font-size: 16pt; margin-top: 5px;" id="printDateRange"></p>
+            </div>
+
+            <table class="gov-table">
+                <thead>
+                    <tr>
+                        <th style="width: 6%;">ลำดับ</th>
+                        <th style="width: 14%;">วัน/เดือน/ปี</th>
+                        <th style="width: 20%;">เรื่องร้องเรียน / ประเภท</th>
+                        <th style="width: 20%;">สถานที่เกิดเหตุ (ชุมชน/ซอย)</th>
+                        <th style="width: 15%;">หน่วยงานรับผิดชอบ</th>
+                        <th style="width: 13%;">สถานะการดำเนินงาน</th>
+                        <th style="width: 12%;">หมายเหตุ / อุปสรรค</th>
+                    </tr>
+                </thead>
+                <tbody id="printTableBody">
+                    <!-- ข้อมูลพิมพ์ถูกสร้างสร้างผ่าน JS -->
+                </tbody>
+            </table>
+
+            <div style="margin-top: 40px; display: flex; justify-content: flex-end; text-align: center;">
+                <div style="width: 250px;">
+                    <p style="margin-bottom: 50px;">ลงชื่อ..........................................................<br>(..........................................................)</p>
+                    <p>ตำแหน่ง....................................................</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Firebase Logic -->
+    <!-- Firebase & Custom Script -->
     <script type="module">
         import { 
             auth, 
@@ -214,6 +297,7 @@
         const userEmail = document.getElementById('userEmail');
         const addComplaintForm = document.getElementById('addComplaintForm');
         const adminTableBody = document.getElementById('adminTableBody');
+        const imageFileInput = document.getElementById('imageFileInput');
 
         let complaintsData = [];
 
@@ -233,7 +317,7 @@
             }
         });
 
-        // Login Event
+        // Login
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
@@ -245,7 +329,7 @@
             }
         });
 
-        // Logout Event
+        // Logout
         logoutBtn.addEventListener('click', () => signOut(auth));
 
         // Load Data
@@ -281,7 +365,7 @@
             document.getElementById('adminStatOverdue').textContent = overdue;
         }
 
-        // Render Table
+        // Render Web Table
         function renderAdminTable(data) {
             if (data.length === 0) {
                 adminTableBody.innerHTML = '<tr><td colspan="8" class="text-center py-6 text-slate-400">ยังไม่มีรายการข้อมูล</td></tr>';
@@ -336,9 +420,45 @@
             adminTableBody.innerHTML = html;
         }
 
-        // Add Complaint Event
+        // Helper: Convert File to Base64 String (พร้อมย่อขนาดรูปภาพ)
+        function convertFileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800; // กำหนดขนาดรูปสูงสุดเพื่อไม่ให้เปลืองพื้นที่
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7)); // บีบอัดคุณภาพ 70%
+                    };
+                };
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Add Complaint
         addComplaintForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            let base64Image = '';
+            if (imageFileInput.files.length > 0) {
+                base64Image = await convertFileToBase64(imageFileInput.files[0]);
+            }
+
             const newDoc = {
                 subject: document.getElementById('subject').value,
                 community: document.getElementById('community').value,
@@ -349,20 +469,21 @@
                 officer: document.getElementById('officer').value,
                 step: document.getElementById('step').value,
                 obstacle: document.getElementById('obstacle').value || '-',
-                imageUrl: document.getElementById('imageUrl').value || '',
+                imageUrl: base64Image,
                 createdAt: new Date().toISOString()
             };
 
             try {
                 await addDoc(collection(db, "complaints"), newDoc);
                 addComplaintForm.reset();
+                imageFileInput.value = ''; // เคลียร์ช่องเลือกไฟล์
                 loadAdminData();
             } catch (err) {
                 alert('เกิดข้อผิดพลาดในการบันทึก: ' + err.message);
             }
         });
 
-        // Update Step Function
+        // Update Step
         window.updateStep = async (id, newStep) => {
             try {
                 const docRef = doc(db, "complaints", id);
@@ -373,16 +494,52 @@
             }
         };
 
-        // Delete Function
+        // Delete
         window.deleteComplaint = async (id) => {
             if (confirm('คุณต้องการลบรายการนี้ใช่หรือไม่?')) {
                 try {
-                    await deleteDoc(doc(db, "complaints", id));
+                    await deleteDoc(doc(db, "complaints"), id);
                     loadAdminData();
                 } catch (err) {
                     alert('ลบไม่สำเร็จ: ' + err.message);
                 }
             }
+        };
+
+        // Print Function แบบราชการ A4
+        window.printReport = () => {
+            const printTableBody = document.getElementById('printTableBody');
+            const printDateRange = document.getElementById('printDateRange');
+            
+            const todayFormatted = new Date().toLocaleDateString('th-TH', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+            printDateRange.textContent = `ข้อมูล ณ วันที่ ${todayFormatted}`;
+
+            let html = '';
+            complaintsData.forEach((item, index) => {
+                const date = new Date(item.createdAt).toLocaleDateString('th-TH', {
+                    day: 'numeric', month: 'short', year: '2-digit'
+                });
+
+                html += `
+                    <tr>
+                        <td style="text-align: center;">${index + 1}</td>
+                        <td style="text-align: center;">${date}</td>
+                        <td>
+                            <b>${item.subject}</b><br>
+                            <small>ประเภท: ${item.category || '-'}</small>
+                        </td>
+                        <td>${item.community || '-'}<br><small>📍 ${item.location || '-'}</small></td>
+                        <td>${item.department || '-'}<br><small>ผู้รับเคส: ${item.officer || '-'}</small></td>
+                        <td style="text-align: center;">${item.step || 'รับเรื่อง'}</td>
+                        <td>${item.obstacle && item.obstacle !== '-' ? item.obstacle : '-'}</td>
+                    </tr>
+                `;
+            });
+
+            printTableBody.innerHTML = html;
+            window.print();
         };
     </script>
 </body>
